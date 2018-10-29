@@ -1,0 +1,115 @@
+$js: #f0db4f;
+
+#unit {
+	background: #222;
+	border-radius: 12px;
+
+	#head {
+		padding: 12px;
+		display: flex;
+
+		> * {
+			margin: 6px;
+		}
+
+		#title {
+			font-size: 60px;
+			font-family: Arial;
+			font-weight: bold;
+			color: $js;
+		}
+
+		#osc {
+			border-radius: 6px;
+			margin-left: auto;
+			background: #111;
+		}
+	}
+
+	#input {
+		#vol {
+			writing-mode: bt-lr; // IE
+			-webkit-appearance: slider-vertical; // WebKit
+			height: 100px;
+			width: 32px;
+		}
+	}
+
+	#body {
+		display: flex;
+		background: grey;
+
+		#board {
+			padding: 6px;
+			display: flex;
+
+			#black {
+				position: absolute;
+			}
+
+			#white,
+			#black {
+				display: flex;
+
+				div {
+					padding: 6px;
+					margin: 6px;
+					width: calc((0.875in) / 2);
+
+					.key {
+						width: calc((0.875in) / 2);
+						border-radius: 0 0 6px 6px;
+						box-shadow: 0 10px #333;
+						cursor: pointer;
+					}
+				}
+			}
+
+			#white {
+
+				div {
+					.key {
+						background: #f1f1f1;
+						height: calc(6in / 2);
+					}
+				}
+			}
+
+			#black {
+				margin-left: calc(((0.875in) / 2) - 12px);
+
+				div {
+					div {
+						background: #161616;
+						height: calc((5in / 8) * 3);
+					}
+				}
+			}
+		}
+
+		#launchpad {
+			// todo fix 1 px margin on divs (?)
+			border-collapse: collapse;
+			margin: 12px;
+			background: #333;
+			border: 6px solid #333;
+
+			td {
+				width: calc((6in / 2 / 3) - 4px);
+				height: calc((6in / 2 / 3 - 4px));
+				padding: 6px;
+
+				div {
+					border-radius: 6px;
+					background: #444;
+					width: inherit;
+					height: inherit;
+					// glowing :D
+					// box-shadow: 1.6px 1.6px 1.6px 1.6px $js;
+					box-shadow: 1.6px 1.6px 1.6px 1.6px #161616;
+					cursor: pointer;
+				}
+			}
+		}
+	}
+}

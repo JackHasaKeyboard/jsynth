@@ -1,2 +1,3 @@
-main.css
+*.css
+*.map
 .sass-cache

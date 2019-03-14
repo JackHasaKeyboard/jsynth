@@ -300,6 +300,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	});
 
 	// key
+	// white
 	$("#white > div").mousedown(function() {
 		$(this).find(".key").css({
 			"height": "calc(calc(" + 6 + "in / 2) * 0.84)",
@@ -320,6 +321,33 @@ document.addEventListener("DOMContentLoaded", function() {
 	$("#white div").mouseleave(function() {
 		$(this).find(".key").css({
 			"height": "calc(" + 6 + "in / 2)",
+			"box-shadow": "0 10px #333"
+		});
+
+		vol.gain.value = -1;
+	});
+
+	// black
+	$("#black > div").mousedown(function() {
+		$(this).find(".key").css({
+			"height": (((5 / 8) * 3) * 0.84) + "in",
+			"box-shadow": "0 6px #333"
+		});
+
+		vol.gain.value = sett["vol"];
+	});
+
+	$("#black div").mouseup(function() {
+		$(this).find(".key").css({
+			"height": ((5 / 8) * 3) + "in",
+			"box-shadow": "0 10px #333"
+		});
+
+		vol.gain.value = -1;
+	});
+	$("#black div").mouseleave(function() {
+		$(this).find(".key").css({
+			"height": ((5 / 8) * 3) + "in",
 			"box-shadow": "0 10px #333"
 		});
 

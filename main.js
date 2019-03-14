@@ -1,28 +1,52 @@
 document.addEventListener("DOMContentLoaded", function() {
 	const js = "#f0db4f";
 
-	// context
+	/* audio */
+	const ctxAudio = new (window.AudioContext || window.webkitAudioContext)();
+
+	var osc = ctxAudio.createOscillator();
+
+	const sz = Math.pow(2, 10);
+	var
+		analyser = ctxAudio.createAnalyser(),
+		proc = ctxAudio.createScriptProcessor(sz, 1, 1);
+
+	analyser.fftSize = sz;
+
+	// visualizer
+	var data = new Uint8Array(analyser.frequencyBinCount);
+
 	const
-		ctx = new (window.AudioContext || window.webkitAudioContext)(),
-		ctx2 = new (window.AudioContext || window.webkitAudioContext)();
+		canv = document.getElementById("osc"),
+		ctxCanv = canv.getContext("2d");
 
-		requestAnimationFrame = (window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame);
+	proc.onaudioprocess = function() {
+		analyser.getByteFrequencyData(data);
 
-	// oscillator
-	let osc = ctx.createOscillator();
+		ctxCanv.fillStyle = js;
+		ctxCanv.fillRect(
+			0,
+			0,
+			canv.width,
+			canv.height
+		);
 
-	osc.connect(ctx.destination);
+		for (let i = 0; i < data.length; i++) {
+			ctxCanv.fillStyle = "#111";
+			ctxCanv.fillRect(
+				i,
+				-(canv.height / 255) * data[i],
+				1,
+				canv.height
+			);
+		}
+	}
 
-	// volume
-	var gainNode = ctx.createGain();
-
-	osc.connect(gainNode);
-	gainNode.connect(ctx.destination);
-
-	// todo: make work
-	$("#vol").change(function(e) {
-		gainNode.gain.value = e.target.value;
-	});
+	// connect
+	osc.connect(analyser);
+	osc.connect(ctxAudio.destination);
+	analyser.connect(proc);
+	proc.connect(ctxAudio.destination);
 
 	// mod
 	for (let i = 0; i < 8; i++) {
@@ -182,7 +206,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	}
 
 	// wave
-	const data = {
+	const form = {
 		"sine": `
 			M 0, 8
 			C 0 8, 8 24, 16 8
@@ -239,46 +263,22 @@ document.addEventListener("DOMContentLoaded", function() {
 		`
 	);
 
-	$("#wave svg path").attr("d", data["sine"]);
+	$("#wave svg path").attr("d", form["sine"]);
 
-	for (const wave in data) {
+	for (const wave in form) {
 		$("#input select").append("<option>" + wave + "</option>");
 	}
 
 	$("#input select").change(function() {
-		osc.type = this.value;
-
-		$("#wave svg path").attr("d", data[this.value]);
+		$("#wave svg path").attr("d", form[this.value]);
 	});
 
-	// note
+	// key
 	$("#white > div").mousedown(function() {
 		$(this).find(".key").css({
 			"height": "calc(calc(" + 6 + "in / 2) * 0.84)",
 			"box-shadow": "0 6px #333"
 		});
-
-		osc.frequency.value = 220 + (($(this).index() - 1) * 27.5);
-
-		ctx.resume();
-		osc.start();
-
-
-		setupAudioNode();
-
-		jsNode.onaudioprocess = function() {
-			analyserNode.getByteTimeDomainData(amp);
-
-			if (play == true) {
-				requestAnimationFrame(drawTimeDomain);
-			}
-		}
-
-		if (audioDat) {
-			playSnd(audioDat);
-		} else {
-			load("asdf.ogg");
-		}
 	});
 
 	$("#white div").mouseup(function() {
@@ -286,17 +286,12 @@ document.addEventListener("DOMContentLoaded", function() {
 			"height": "calc(" + 6 + "in / 2)",
 			"box-shadow": "0 10px #333"
 		});
-
-		ctx.suspend();
 	});
-
 	$("#white div").mouseleave(function() {
 		$(this).find(".key").css({
 			"height": "calc(" + 6 + "in / 2)",
 			"box-shadow": "0 10px #333"
 		});
-
-		ctx.suspend();
 	});
 
 	// launchpad
@@ -320,85 +315,3 @@ document.addEventListener("DOMContentLoaded", function() {
 		});
 	});
 });
-
-AudioCtx = (window.webkitAudioContext || window.AudioContext || window.mozAudioContext);
-
-let
-	audioCtx,
-	audioBuff,
-
-	src,
-	analyserNode,
-	jsNode,
-	audioDat,
-	play = false,
-	sampRate = 1024,
-	amp,
-
-	ctx;
-
-const canv = {
-	"wd": 512,
-	"ht": 256
-};
-
-document.addEventListener("DOMContentLoaded", function() {
-	ctx2d = document.getElementById("osc").getContext("2d");
-
-	audioCtx = new AudioCtx();
-});
-
-function setupAudioNode() {
-	src = audioCtx.createBufferSource();
-	analyserNode = audioCtx.createAnalyser();
-	jsNode = audioCtx.createScriptProcessor(sampRate, 1, 1);
-
-	amp = new Uint8Array(analyserNode.frequencyBinCount);
-
-	src.connect(audioCtx.destination);
-	src.connect(analyserNode);
-	analyserNode.connect(jsNode);
-	jsNode.connect(audioCtx.destination);
-}
-
-function load(url) {
-	const req = new XMLHttpRequest();
-
-	req.open("GET", url, true);
-
-	req.responseType = "arraybuffer";
-
-	req.onload = function() {
-		audioCtx.decodeAudioData(req.response, function(buff) {
-			audioDat = buff;
-
-			playSnd(audioDat);
-		}, null);
-	}
-
-	req.send();
-}
-
-function playSnd(buff) {
-	src.buffer = buff;
-
-	src.start(0);
-
-	play = true;
-}
-
-function drawTimeDomain() {
-	ctx2d.clearRect(0, 0, canv.wd, canv.ht);
-
-	for (var i = 0; i < amp.length; i++) {
-		var
-			val = amp[i] / 256,
-			y = canv.ht - (canv.ht * val);
-
-		ctx2d.fillStyle = "#f0db4f";
-		ctx2d.fillRect(i, y, 1, y);
-
-		ctx2d.fillStyle = "rgba(240, 219, 79, 0.6)";
-		ctx2d.fillRect(i, y - 4, 1, 4);
-	}
-}

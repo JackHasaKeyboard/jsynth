@@ -1,3 +1,7 @@
+var sett = {
+	"vol": -1
+};
+
 document.addEventListener("DOMContentLoaded", function() {
 	const js = "#f0db4f";
 
@@ -42,11 +46,33 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 	}
 
+	var vol = ctxAudio.createGain();
+
 	// connect
 	osc.connect(analyser);
 	osc.connect(ctxAudio.destination);
 	analyser.connect(proc);
 	proc.connect(ctxAudio.destination);
+	vol.connect(ctxAudio.destination);
+	osc.connect(vol);
+
+	osc.start();
+
+	// volume
+	vol.gain.value = sett["vol"];
+
+	const
+		pc = 100 / 2,
+		val = (sett["vol"] + 1) * pc;
+	$("#vol").val(val);
+
+	$("#vol").change(function() {
+		const
+			pc = (2 / 100),
+			val = (this.value) * pc;
+
+		sett["vol"] = val;
+	});
 
 	// mod
 	for (let i = 0; i < 8; i++) {

@@ -305,6 +305,8 @@ document.addEventListener("DOMContentLoaded", function() {
 			"height": "calc(calc(" + 6 + "in / 2) * 0.84)",
 			"box-shadow": "0 6px #333"
 		});
+
+		vol.gain.value = sett["vol"];
 	});
 
 	$("#white div").mouseup(function() {
@@ -312,12 +314,16 @@ document.addEventListener("DOMContentLoaded", function() {
 			"height": "calc(" + 6 + "in / 2)",
 			"box-shadow": "0 10px #333"
 		});
+
+		vol.gain.value = -1;
 	});
 	$("#white div").mouseleave(function() {
 		$(this).find(".key").css({
 			"height": "calc(" + 6 + "in / 2)",
 			"box-shadow": "0 10px #333"
 		});
+
+		vol.gain.value = -1;
 	});
 
 	// launchpad

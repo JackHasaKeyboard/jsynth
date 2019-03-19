@@ -300,6 +300,12 @@ document.addEventListener("DOMContentLoaded", function() {
 	});
 
 	// key
+	const
+		c4 = 261.63,
+		c5 = 523.25,
+
+		octave = Math.abs(c4 - c5);
+
 	// white
 	$("#white > div").mousedown(function() {
 		$(this).find(".key").css({
@@ -307,6 +313,9 @@ document.addEventListener("DOMContentLoaded", function() {
 			"box-shadow": "0 6px #333"
 		});
 
+		const i = $(this).index();
+
+		osc.frequency.value = c4 + (i * (octave / 8));
 		vol.gain.value = sett["vol"];
 	});
 

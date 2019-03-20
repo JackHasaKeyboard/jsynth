@@ -173,3 +173,61 @@ $js: #f0db4f;
 		}
 	}
 }
+
+.dial {
+	padding: calc(64px);
+	margin: 8px;
+	background: #111;
+	border-radius: 6px;
+	padding-left: 100px;
+	padding-right: 100px;
+	display: flex;
+
+	div {
+		margin-left: auto;
+		margin-right: auto;
+		margin-left: 32px;
+
+		svg {
+			cursor: pointer;
+			position: absolute;
+			margin-left: -32px;
+			margin-top: -32px;
+
+			&#shadow {
+				margin-top: 68px;
+			}
+
+			text {
+				font-family: Arial;
+				font-weight: bold;
+				text-transform: uppercase;
+				fill: grey;
+				// letter-spacing: 4px;
+				font-size: 12px;
+			}
+		}
+	}
+}
+
+#sys {
+	.node {
+		padding: 8px;
+
+		.head {
+			h3 {
+				text-align: center;
+				font-family: Arial;
+				color: grey;
+			}
+		}
+
+		.body {
+			display: flex;
+
+			> div {
+				flex-grow: 1;
+			}
+		}
+	}
+}

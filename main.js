@@ -1,6 +1,260 @@
-var sett = {
-	"vol": -1
+const attr = {
+	"de-tune": {
+		"min": -50,
+		"max": 50
+	},
+	"rate": {
+		"min": 1,
+		"max": 1000
+	}, 
+	"gain": {
+		"min": 0,
+		"max": 1
+	}
 };
+
+var
+	sett = {
+		"vol": -1,
+		"osc": [
+			{
+				"de-tune": 0,
+				"rate": 0,
+				"gain": 1
+			}, {
+				"de-tune": 0,
+				"rate": 0,
+				"gain": 1
+			}, {
+				"de-tune": 0,
+				"rate": 0,
+				"gain": 1
+			}, {
+				"de-tune": 0,
+				"rate": 0,
+				"gain": 1
+			}
+		]
+	},
+
+	dir = 1;
+
+function polarToCart(
+	centerX,
+	centerY,
+	radius,
+	angleInDeg
+) {
+	var angleInRad = (angleInDeg-90) * Math.PI / 180.0;
+
+	return {
+		x: centerX + (radius * Math.cos(angleInRad)),
+		y: centerY + (radius * Math.sin(angleInRad))
+	};
+}
+
+function descArc(
+	x,
+	y,
+	radius,
+	startAngle,
+	endAngle
+) {
+	var
+		start = polarToCart(x, y, radius, endAngle),
+		end = polarToCart(x, y, radius, startAngle),
+
+		largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1",
+
+		d = [
+			"M", start.x, start.y,
+			"A", radius, radius, 0, largeArcFlag, 0, end.x, end.y
+		].join(" ");
+
+	return d;
+}
+
+function dial(
+	type
+) {
+	return `
+	<div
+		class="dial ${type}"
+	>
+		<div>
+			<svg
+				overflow="visible"
+				id="shadow"
+			>
+				<filter
+					id="dropShadow"
+					height="110%"
+				>
+					<feGaussianBlur
+						in="SourceAlpha"
+						stdDeviation="1.6"
+					/>
+					<feOffset
+						dx="0"
+						dy="0"
+						result="offsetblur"
+					/>
+
+					<feComponentTransfer>
+						<feFuncA
+							type="linear"
+							slope="0.32"
+						/>
+					</feComponentTransfer>
+					<feMerge>
+						<feMergeNode/>
+						<feMergeNode
+							in="SourceGraphic"
+						/>
+					</feMerge>
+				</filter>
+
+				<circle
+					cx="32"
+					cy="32"
+					r="16"
+					fill="#222"
+					style="filter:url(#dropShadow)"
+					overflow="visible"
+					transform="translate(0, -100)"
+				/>
+			</svg>
+
+			<svg
+				width="84"
+				height="44"
+				transform="translate(0, 32)"
+				fill="transparent"
+				stroke="#080808"
+				stroke-width="4"
+			>
+				<circle
+					cx="32"
+					cy="32"
+					r="26"
+					transform="translate(0, -32)"
+				/>
+			</svg>
+
+			<svg
+				class="active"
+				width="84"
+				height="64"
+				transform="translate(-12, 32)"
+			>
+				<path
+					transform="translate(42, 32)"
+					d="${descArc(0, 0, 26, 0, 180)}"
+					fill="transparent"
+					stroke="#f0db4f"
+					stroke-width="4"
+				/>
+			</svg>
+
+			<svg
+				class="pointer"
+				width="64"
+				height="64"
+			>
+				<path
+					d="M 0, -8 L 0, 0"
+					stroke="#f0db4f"
+					stroke-width="4"
+				/>
+			</svg>
+
+			<svg
+				class="line"
+				width="64"
+				height="64"
+				overflow="visible"
+				transform="translate(32, 32)"
+			>
+				<g
+					id="lines"
+				>
+					<line
+						x1="34"
+						x2="44"
+					></line>
+				</g>
+
+				<g
+					stroke="#666"
+					stroke-width="4"
+				>
+					<use
+						xlink:href="#lines"
+						transform="rotate(180)">
+					</use>
+					<use
+						xlink:href="#lines"
+						transform="rotate(157.5)">
+					</use>
+					<use
+						xlink:href="#lines"
+						transform="rotate(135)">
+					</use>
+					<use
+						xlink:href="#lines"
+						transform="rotate(112.5)">
+					</use>
+					<use
+						xlink:href="#lines"
+						transform="rotate(90)">
+					</use>
+					<use
+						xlink:href="#lines"
+						transform="rotate(67.5)">
+					</use>
+					<use
+						xlink:href="#lines"
+						transform="rotate(45)">
+					</use>
+					<use
+						xlink:href="#lines"
+						transform="rotate(22.5)">
+					</use>
+					<use
+						xlink:href="#lines"
+						transform="rotate(0)">
+					</use>
+				</g>
+
+				<text
+					class="title"
+					text-anchor="middle"
+					transform="translate(0, -26)"
+				>
+					` + type + `
+				</text>
+
+				<text
+					class="mark"
+					alignment-baseline="middle"
+					text-anchor="end"
+					transform="translate(-54, 0)"
+				>
+					` + attr[type]["min"] + `
+				</text>
+				<text
+					class="mark"
+					alignment-baseline="middle"
+					text-anchor="right"
+					transform="translate(54, 0)"
+				>
+					` + attr[type]["max"] + `
+				</text>
+			</svg>
+		</div>
+	</div>
+	`;
+}
 
 document.addEventListener("DOMContentLoaded", function() {
 	const js = "#f0db4f";
@@ -383,4 +637,151 @@ document.addEventListener("DOMContentLoaded", function() {
 			"box-shadow": "0 4px 0 0 #161616"
 		});
 	});
+
+	/* oscillator */
+	var sys = [];
+	for (
+		let i = 0;
+		i < 4;
+		i++
+	) {
+		let osc = ctxAudio.createOscillator();
+		osc.connect(ctxAudio.destination);
+		osc.start(); 
+
+		let gain = ctxAudio.createGain();
+		osc.connect(gain);
+		gain.connect(ctxAudio.destination);
+		gain.gain.value = -1;
+
+		sys.push({
+			"osc": osc,
+			"gain": gain
+		});
+	}
+
+	for (
+		let i = 0;
+		i < 4;
+		i++
+	) {
+		$("#sys").append(`
+			<div
+				class="node"
+			>
+				<div
+					class="head"
+				>
+					<h3>
+						${i}
+					</h3>
+				</div>
+
+				<div
+					class="body"
+				></div>
+			</div>
+		`);
+
+		for (
+			let inst in attr
+		) {
+			$("#sys .node:nth-child(" + (i + 1) + ") .body").append(dial(inst));
+		}
+	}
+
+	for (
+		let i = 0;
+		i < 4;
+		i++
+	) {
+		for (
+			let type in sett["osc"][i]
+		) {
+			const
+				diff = Math.abs(attr[type]["min"] - attr[type]["max"]),
+				inc = diff / 8,
+
+				pc = 180 / diff,
+				deg = sett["osc"][i][type] * pc;
+
+			$("#sys .node:nth-child(" + (i + 1)+ ") .dial." + type + " .active path").attr(
+				"transform",
+				"translate(44, 0) rotate(" + (-90 - deg) + ")"
+			);
+			$("#sys .node:nth-child(" + (i + 1)+ ") .dial." + type + " .pointer path").attr(
+				"transform",
+				"translate(32, 40) rotate(" + (-90 - deg) + ")"
+			);
+		}
+	}
+
+	$(".dial").click(function() {
+		const
+			i = $(this).parent().parent().index(),
+			type = $(this).attr("class").split(" ")[1],
+
+			diff = Math.abs(attr[type]["min"] - attr[type]["max"]),
+			inc = diff / 8,
+
+			pc = 180 / diff,
+			deg = sett["osc"][i][type] * pc;
+
+		if (dir == 1) {
+			if (sett["osc"][i][type] + (inc * dir) < attr[type]["max"]) {
+				sett["osc"][i][type] += inc * dir;
+			} else {
+				sett["osc"][i][type] = attr[type]["max"];
+			}
+		}
+
+		if (dir == -1) {
+			if (sett["osc"][i][type] + (inc * dir) > attr[type]["min"]) {
+				sett["osc"][i][type] += inc * dir;
+			} else {
+				sett["osc"][i][type] = attr[type]["min"];
+			}
+		}
+
+		switch (type) {
+			case "de-tune":
+				let inc = (440 / diff);
+
+				sys[i]["osc"]["detune"]["value"] = 440 + (sett["osc"][i]["de-tune"] * inc);
+
+				break;
+
+			case "rate":
+				sys[i]["osc"]["frequency"]["value"] = sett["osc"][i]["rate"];
+
+				break;
+
+			case "gain":
+				sys[i]["gain"]["gain"]["value"] = sett["osc"][i]["gain"] - 1;
+
+				break;
+		}
+
+		$(this).find(".active path").attr(
+			"transform",
+			"translate(44, 0) rotate(" + (-90 - deg) + ")"
+		);
+		$(this).find(".pointer path").attr(
+			"transform",
+			"translate(32, 40) rotate(" + (-90 - deg) + ")"
+		);
+	});
+});
+
+$(document).keydown(function(e) {
+	switch (e.key) {
+		case "Alt":
+			dir = -1;
+
+			break;
+	}
+});
+
+$(document).keyup(function(e) {
+	dir = 1;
 });

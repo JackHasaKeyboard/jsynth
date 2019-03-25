@@ -728,18 +728,18 @@ document.addEventListener("DOMContentLoaded", function() {
 			deg = sett["osc"][i][type] * pc;
 
 		if (dir == 1) {
-			if (sett["osc"][i][type] + (inc * dir) < attr[type]["max"]) {
-				sett["osc"][i][type] += inc * dir;
-			} else {
+			if (sett["osc"][i][type] + (inc * dir) > attr[type]["max"]) {
 				sett["osc"][i][type] = attr[type]["max"];
+			} else {
+				sett["osc"][i][type] += inc * dir;
 			}
 		}
 
 		if (dir == -1) {
-			if (sett["osc"][i][type] + (inc * dir) > attr[type]["min"]) {
-				sett["osc"][i][type] += inc * dir;
-			} else {
+			if (sett["osc"][i][type] + (inc * dir) < attr[type]["min"]) {
 				sett["osc"][i][type] = attr[type]["min"];
+			} else {
+				sett["osc"][i][type] += inc * dir;
 			}
 		}
 

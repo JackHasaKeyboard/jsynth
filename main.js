@@ -144,11 +144,11 @@ function dial(
 			<svg
 				class="active"
 				width="84"
-				height="64"
-				transform="translate(-12, 32)"
+				height="32"
+				transform="translate(-10, 32)"
 			>
 				<path
-					transform="translate(42, 32)"
+					transform="translate(42, 0)"
 					d="${descArc(0, 0, 26, 0, 180)}"
 					fill="transparent"
 					stroke="#f0db4f"
@@ -157,11 +157,14 @@ function dial(
 			</svg>
 
 			<svg
+				transform="translate(44, 0)"
 				class="pointer"
 				width="64"
 				height="64"
+				overflow="visible"
 			>
 				<path
+					transform="translate(32, 24)"
 					d="M 0, -8 L 0, 0"
 					stroke="#f0db4f"
 					stroke-width="4"
@@ -711,11 +714,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
 			$("#sys .node:nth-child(" + (i + 1)+ ") .dial." + type + " .active path").attr(
 				"transform",
-				"translate(44, 0) rotate(" + (-90 - deg) + ")"
+				"translate(42, 0) rotate(" + (-90 - deg) + ")"
 			);
-			$("#sys .node:nth-child(" + (i + 1)+ ") .dial." + type + " .pointer path").attr(
+			$("#sys .node:nth-child(" + (i + 1)+ ") .dial." + type + " .pointer").attr(
 				"transform",
-				"translate(32, 40) rotate(" + (-90 - deg) + ")"
+				"rotate(" + (-90 - deg) + ")"
 			);
 		}
 	}
@@ -769,11 +772,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
 		$(this).find(".active path").attr(
 			"transform",
-			"translate(44, 0) rotate(" + (-90 - deg) + ")"
+			"translate(42, 0) rotate(" + (-90 - deg) + ")"
 		);
-		$(this).find(".pointer path").attr(
+		$(this).find(".pointer").attr(
 			"transform",
-			"translate(32, 40) rotate(" + (-90 - deg) + ")"
+			"rotate(" + (-90 - deg) + ")"
 		);
 	});
 });

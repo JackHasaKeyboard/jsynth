@@ -703,7 +703,7 @@ document.addEventListener("DOMContentLoaded", function() {
 				inc = diff / 8,
 
 				pc = 180 / diff,
-				deg = sett["osc"][i][type] * pc;
+				deg = Math.abs(attr[type]["min"] - sett["osc"][i][type]) * pc;
 
 			$("#sys .node:nth-child(" + (i + 1)+ ") .dial." + type + " .active path").attr(
 				"transform",
@@ -725,7 +725,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			inc = diff / 8,
 
 			pc = 180 / diff,
-			deg = sett["osc"][i][type] * pc;
+			deg = Math.abs(attr[type]["min"] - sett["osc"][i][type]) * pc;
 
 		if (dir == 1) {
 			if (sett["osc"][i][type] + (inc * dir) > attr[type]["max"]) {

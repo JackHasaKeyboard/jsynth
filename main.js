@@ -20,19 +20,19 @@ var
 			{
 				"de-tune": 0,
 				"rate": 0,
-				"gain": 1
+				"gain": 0
 			}, {
 				"de-tune": 0,
 				"rate": 0,
-				"gain": 1
+				"gain": 0
 			}, {
 				"de-tune": 0,
 				"rate": 0,
-				"gain": 1
+				"gain": 0
 			}, {
 				"de-tune": 0,
 				"rate": 0,
-				"gain": 1
+				"gain": 0
 			}
 		]
 	},
@@ -704,6 +704,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
 				pc = 180 / diff,
 				deg = Math.abs(attr[type]["min"] - sett["osc"][i][type]) * pc;
+
+			sys[i]["osc"]["de-tune"] = sett["osc"][i]["de-tune"];
+			sys[i]["osc"]["rate"] = sett["osc"][i]["rate"];
+			sys[i]["gain"]["gain"]["value"] = sett["osc"][i]["gain"];
 
 			$("#sys .node:nth-child(" + (i + 1)+ ") .dial." + type + " .active path").attr(
 				"transform",

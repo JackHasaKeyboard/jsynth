@@ -722,10 +722,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			type = $(this).attr("class").split(" ")[1],
 
 			diff = Math.abs(attr[type]["min"] - attr[type]["max"]),
-			inc = diff / 8,
-
-			pc = 180 / diff,
-			deg = Math.abs(attr[type]["min"] - sett["osc"][i][type]) * pc;
+			inc = diff / 8;
 
 		if (dir == 1) {
 			if (sett["osc"][i][type] + (inc * dir) > attr[type]["max"]) {
@@ -742,6 +739,10 @@ document.addEventListener("DOMContentLoaded", function() {
 				sett["osc"][i][type] += inc * dir;
 			}
 		}
+
+		const
+			pc = 180 / diff,
+			deg = Math.abs(attr[type]["min"] - sett["osc"][i][type]) * pc;
 
 		switch (type) {
 			case "de-tune":

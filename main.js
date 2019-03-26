@@ -362,11 +362,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	var vol = ctxAudio.createGain();
 
-	// connect
-	analyser.connect(proc);
-	proc.connect(ctxAudio.destination);
-	vol.connect(ctxAudio.destination);
-
 	// volume
 	vol.gain.value = sett["vol"];
 
@@ -818,6 +813,23 @@ document.addEventListener("DOMContentLoaded", function() {
 			sys[i]["gain"]["gain"]["value"] = sett["vol"];
 		}
 	});
+
+	// connect
+	for (
+		let i = 0;
+		i < 4;
+		i++
+	) {
+		sys[i]["osc"].connect(analyser);
+		sys[i]["osc"].connect(ctxAudio.destination);
+
+		sys[i]["gain"].connect(analyser);
+		sys[i]["gain"].connect(ctxAudio.destination);
+	}
+
+	analyser.connect(proc);
+	proc.connect(ctxAudio.destination);
+	vol.connect(ctxAudio.destination);
 });
 
 $(document).keydown(function(e) {

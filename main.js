@@ -67,28 +67,28 @@ var
 				"attr": {
 					"de-tune": 0,
 					"rate": 0,
-					"gain": 0
+					"gain": -1
 				}
 			}, {
 				"form": "sine",
 				"attr": {
 					"de-tune": 0,
 					"rate": 0,
-					"gain": 0
+					"gain": -1
 				}
 			}, {
 				"form": "sine",
 				"attr": {
 					"de-tune": 0,
 					"rate": 0,
-					"gain": 0
+					"gain": -1
 				}
 			}, {
 				"form": "sine",
 				"attr": {
 					"de-tune": 0,
 					"rate": 0,
-					"gain": 0
+					"gain": -1
 				}
 			}
 		]
@@ -363,14 +363,9 @@ document.addEventListener("DOMContentLoaded", function() {
 	var vol = ctxAudio.createGain();
 
 	// connect
-	osc.connect(analyser);
-	osc.connect(ctxAudio.destination);
 	analyser.connect(proc);
 	proc.connect(ctxAudio.destination);
 	vol.connect(ctxAudio.destination);
-	osc.connect(vol);
-
-	osc.start();
 
 	// volume
 	vol.gain.value = sett["vol"];
@@ -803,6 +798,25 @@ document.addEventListener("DOMContentLoaded", function() {
 			"transform",
 			"rotate(" + (-90 - deg) + ")"
 		);
+	});
+
+	// volume
+	$("#vol").val((sett["vol"] + 1) * 100);
+
+	$("#vol").change(function() {
+		const
+			pc = (2 / 100),
+			val = (this.value * pc) - 1;
+
+		sett["vol"] = val;
+
+		for (
+			let i = 0;
+			i < 4;
+			i++
+		) {
+			sys[i]["gain"]["gain"]["value"] = sett["vol"];
+		}
 	});
 });
 

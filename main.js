@@ -1,38 +1,95 @@
-const attr = {
-	"de-tune": {
-		"min": -50,
-		"max": 50
+const
+	attr = {
+		"de-tune": {
+			"min": -50,
+			"max": 50
+		},
+		"rate": {
+			"min": 1,
+			"max": 1000
+		}, 
+		"gain": {
+			"min": 0,
+			"max": 1
+		}
 	},
-	"rate": {
-		"min": 1,
-		"max": 1000
-	}, 
-	"gain": {
-		"min": 0,
-		"max": 1
-	}
-};
+
+	form = {
+		"sine": `
+			M 0, 8
+			C 0 8, 8 24, 16 8
+			C 16 8, 24 -8, 32 8
+
+			C 32 8, 40 24, 48 8
+			C 48 8, 56 -8, 64 8
+
+			C 64 8, 72 24, 80 8
+			C 80 8, 88 -8, 96 8
+		`,
+		"square": `
+			M 0, 16
+			L 16, 16
+			L 16, 0
+			L 32, 0
+			L 32, 16
+			L 48, 16
+			L 48, 0
+			L 64, 0
+			L 64, 16
+			L 80, 16
+			L 80, 0
+			L 96, 0
+		`,
+		"sawtooth":`
+			M 0, 16
+			L 16, 0
+			L 32, 16
+			L 48, 0
+			L 64, 16
+			L 80, 0
+		`,
+		"triangle": `
+			M 0, 16
+			L 32, 0
+			L 32, 16
+			L 64, 0
+			L 64, 16
+			L 96, 0
+		`
+	};
 
 var
 	sett = {
 		"vol": -1,
 		"osc": [
 			{
-				"de-tune": 0,
-				"rate": 0,
-				"gain": 0
+				"form": "sine",
+				"attr": {
+					"de-tune": 0,
+					"rate": 0,
+					"gain": 0
+				}
 			}, {
-				"de-tune": 0,
-				"rate": 0,
-				"gain": 0
+				"form": "sine",
+				"attr": {
+					"de-tune": 0,
+					"rate": 0,
+					"gain": 0
+				}
 			}, {
-				"de-tune": 0,
-				"rate": 0,
-				"gain": 0
+				"form": "sine",
+				"attr": {
+					"de-tune": 0,
+					"rate": 0,
+					"gain": 0
+				}
 			}, {
-				"de-tune": 0,
-				"rate": 0,
-				"gain": 0
+				"form": "sine",
+				"attr": {
+					"de-tune": 0,
+					"rate": 0,
+					"gain": 0
+				}
 			}
 		]
 	},
@@ -488,74 +545,6 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 	}
 
-	// wave
-	const form = {
-		"sine": `
-			M 0, 8
-			C 0 8, 8 24, 16 8
-			C 16 8, 24 -8, 32 8
-
-			C 32 8, 40 24, 48 8
-			C 48 8, 56 -8, 64 8
-
-			C 64 8, 72 24, 80 8
-			C 80 8, 88 -8, 96 8
-		`,
-		"square": `
-			M 0, 16
-			L 16, 16
-			L 16, 0
-			L 32, 0
-			L 32, 16
-			L 48, 16
-			L 48, 0
-			L 64, 0
-			L 64, 16
-			L 80, 16
-			L 80, 0
-			L 96, 0
-		`,
-		"sawtooth":`
-			M 0, 16
-			L 16, 0
-			L 32, 16
-			L 48, 0
-			L 64, 16
-			L 80, 0
-		`,
-		"triangle": `
-			M 0, 16
-			L 32, 0
-			L 32, 16
-			L 64, 0
-			L 64, 16
-			L 96, 0
-		`
-	}
-
-	$("#wave").append(
-		`
-		<svg>
-			<path
-				stroke=${js}
-				stroke-width="4px"
-				stroke-linecap="round"
-				fill="transparent"
-			/>
-		</svg>
-		`
-	);
-
-	$("#wave svg path").attr("d", form["sine"]);
-
-	for (const wave in form) {
-		$("#input select").append("<option>" + wave + "</option>");
-	}
-
-	$("#input select").change(function() {
-		$("#wave svg path").attr("d", form[this.value]);
-	});
-
 	// key
 	const
 		c4 = 261.63,
@@ -682,14 +671,50 @@ document.addEventListener("DOMContentLoaded", function() {
 
 				<div
 					class="body"
-				></div>
+				>
+					<div
+						class="form"
+					>
+						<select
+							class="input"
+						></select>
+
+						<svg
+							width="100"
+							height="16"
+							overflow="visible"
+							class="wave"
+						>
+							<path
+								stroke=${js}
+								stroke-width="4px"
+								stroke-linecap="round"
+								fill="transparent"
+								d="${form[sett["osc"][i]["form"]]}"
+							/>
+						</svg>
+					</div>
+					<div
+						class="attr"
+					></div>
+				</div>
 			</div>
 		`);
+
+		for (const wave in form) {
+			$("#sys .node:nth-child(" + (i + 1) + ") .body .form .input").append("<option>" + wave + "</option>");
+		}
+
+		$(".input").change(function() {
+			sys[i]["osc"]["type"] = this.value;
+
+			$(this).parent().find(".wave path").attr("d", form[this.value]);
+		});
 
 		for (
 			let inst in attr
 		) {
-			$("#sys .node:nth-child(" + (i + 1) + ") .body").append(dial(inst));
+			$("#sys .node:nth-child(" + (i + 1) + ") .body .attr").append(dial(inst));
 		}
 	}
 
@@ -699,18 +724,18 @@ document.addEventListener("DOMContentLoaded", function() {
 		i++
 	) {
 		for (
-			let type in sett["osc"][i]
+			let type in sett["osc"][i]["attr"]
 		) {
 			const
 				diff = Math.abs(attr[type]["min"] - attr[type]["max"]),
 				inc = diff / 8,
 
 				pc = 180 / diff,
-				deg = Math.abs(attr[type]["min"] - sett["osc"][i][type]) * pc;
+				deg = Math.abs(attr[type]["min"] - sett["osc"][i]["attr"][type]) * pc;
 
-			sys[i]["osc"]["de-tune"] = sett["osc"][i]["de-tune"];
-			sys[i]["osc"]["rate"] = sett["osc"][i]["rate"];
-			sys[i]["gain"]["gain"]["value"] = sett["osc"][i]["gain"];
+			sys[i]["osc"]["de-tune"] = sett["osc"][i]["attr"]["de-tune"];
+			sys[i]["osc"]["rate"] = sett["osc"][i]["attr"]["rate"];
+			sys[i]["gain"]["gain"]["value"] = sett["osc"][i]["attr"]["gain"];
 
 			$("#sys .node:nth-child(" + (i + 1)+ ") .dial." + type + " .active path").attr(
 				"transform",
@@ -732,40 +757,40 @@ document.addEventListener("DOMContentLoaded", function() {
 			inc = diff / 8;
 
 		if (dir == 1) {
-			if (sett["osc"][i][type] + (inc * dir) > attr[type]["max"]) {
-				sett["osc"][i][type] = attr[type]["max"];
+			if (sett["osc"][i]["attr"][type] + (inc * dir) > attr[type]["max"]) {
+				sett["osc"][i]["attr"][type] = attr[type]["max"];
 			} else {
-				sett["osc"][i][type] += inc * dir;
+				sett["osc"][i]["attr"][type] += inc * dir;
 			}
 		}
 
 		if (dir == -1) {
-			if (sett["osc"][i][type] + (inc * dir) < attr[type]["min"]) {
-				sett["osc"][i][type] = attr[type]["min"];
+			if (sett["osc"][i]["attr"][type] + (inc * dir) < attr[type]["min"]) {
+				sett["osc"][i]["attr"][type] = attr[type]["min"];
 			} else {
-				sett["osc"][i][type] += inc * dir;
+				sett["osc"][i]["attr"][type] += inc * dir;
 			}
 		}
 
 		const
 			pc = 180 / diff,
-			deg = Math.abs(attr[type]["min"] - sett["osc"][i][type]) * pc;
+			deg = Math.abs(attr[type]["min"] - sett["osc"][i]["attr"][type]) * pc;
 
 		switch (type) {
 			case "de-tune":
 				let inc = (440 / diff);
 
-				sys[i]["osc"]["detune"]["value"] = 440 + (sett["osc"][i]["de-tune"] * inc);
+				sys[i]["osc"]["detune"]["value"] = 440 + (sett["osc"][i]["attr"]["de-tune"] * inc);
 
 				break;
 
 			case "rate":
-				sys[i]["osc"]["frequency"]["value"] = sett["osc"][i]["rate"];
+				sys[i]["osc"]["frequency"]["value"] = sett["osc"][i]["attr"]["rate"];
 
 				break;
 
 			case "gain":
-				sys[i]["gain"]["gain"]["value"] = sett["osc"][i]["gain"] - 1;
+				sys[i]["gain"]["gain"]["value"] = sett["osc"][i]["attr"]["gain"] - 1;
 
 				break;
 		}

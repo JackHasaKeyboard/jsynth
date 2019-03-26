@@ -80,20 +80,6 @@ $js: #f0db4f;
 				pointer-events: none;
 			}
 		}
-
-		#wave {
-			display: flex;
-			margin: 8px;
-			padding: 8px;
-			border-radius: 6px;
-			background: #111;
-
-			svg {
-				padding: 8px;
-				height: 16px;
-				width: 100px;
-			}
-		}
 	}
 
 	#body {
@@ -223,10 +209,26 @@ $js: #f0db4f;
 		}
 
 		.body {
-			display: flex;
+			.form {
+				.input {
+					margin: 8px;
+				}
 
-			> div {
-				flex-grow: 1;
+				.wave {
+					display: flex;
+					margin: 8px;
+					padding: 8px;
+					border-radius: 6px;
+					background: #111;
+				}
+			}
+
+			.attr {
+				display: flex;
+
+				> div {
+					flex-grow: 1;
+				}
 			}
 		}
 	}

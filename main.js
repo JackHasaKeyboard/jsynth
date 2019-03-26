@@ -796,21 +796,41 @@ document.addEventListener("DOMContentLoaded", function() {
 	});
 
 	// volume
-	$("#vol").val((sett["vol"] + 1) * 100);
+	$("#vol #thumb").css(
+		"margin-top",
+		(-(sett["vol"]["val"] * 10) - 8) + "px"
+	);
+	$("#vol .active").css({
+		"height": (sett["vol"]["val"] * 10) + "px",
+		"margin-top": -(sett["vol"]["val"] * 10) + "px"
+	});
+	$(document).mousemove(function(e) {
+		if (e.which) {
+			if (e.clientY > 46 && e.clientY < 126) {
+				const
+					pc = (2 / 100),
+					val = ((80 - (e.clientY - 46)) * pc) - 1;
 
-	$("#vol").change(function() {
-		const
-			pc = (2 / 100),
-			val = (this.value * pc) - 1;
+				sett["vol"] = val;
+				console.log(val)
 
-		sett["vol"] = val;
+				for (
+					let i = 0;
+					i < 4;
+					i++
+				) {
+					sys[i]["gain"]["gain"]["value"] = sett["vol"];
+				}
 
-		for (
-			let i = 0;
-			i < 4;
-			i++
-		) {
-			sys[i]["gain"]["gain"]["value"] = sett["vol"];
+				$("#vol #thumb").css(
+					"margin-top",
+					e.clientY - 134
+				);
+				$("#vol .active").css({
+					"height": 80 - (e.clientY - 46),
+					"margin-top": -(80 - (e.clientY - 46))
+				});
+			}
 		}
 	});
 

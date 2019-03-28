@@ -1,16 +1,28 @@
 const
 	attr = {
-		"de-tune": {
-			"min": -50,
-			"max": 50
+		"osc": {
+			"de-tune": {
+				"min": -50,
+				"max": 50
+			},
+			"rate": {
+				"min": 1,
+				"max": 1000
+			}, 
+			"gain": {
+				"min": 0,
+				"max": 1
+			}
 		},
-		"rate": {
-			"min": 1,
-			"max": 1000
-		}, 
-		"gain": {
-			"min": 0,
-			"max": 1
+		"mod": {
+			"high": {
+				"min": 0,
+				"max": 440
+			},
+			"low": {
+				"min": 0,
+				"max": 440
+			}
 		}
 	},
 
@@ -56,6 +68,15 @@ const
 			L 64, 16
 			L 96, 0
 		`
+	},
+
+	fn = {
+		"pass": {
+			"high": function() {
+			},
+			"low": function() {
+			}
+		}
 	};
 
 var
@@ -91,7 +112,11 @@ var
 					"gain": -1
 				}
 			}
-		]
+		],
+		"mod": {
+			"high": 0,
+			"low": 0
+		}
 	},
 
 	dir = 1;
@@ -132,7 +157,8 @@ function descArc(
 }
 
 function dial(
-	type
+	type,
+	cat
 ) {
 	return `
 	<div
@@ -300,7 +326,7 @@ function dial(
 					text-anchor="end"
 					transform="translate(-54, 0)"
 				>
-					` + attr[type]["min"] + `
+					` + attr[cat][type]["min"] + `
 				</text>
 				<text
 					class="mark"
@@ -308,7 +334,7 @@ function dial(
 					text-anchor="right"
 					transform="translate(54, 0)"
 				>
-					` + attr[type]["max"] + `
+					` + attr[cat][type]["max"] + `
 				</text>
 			</svg>
 		</div>
@@ -379,38 +405,137 @@ document.addEventListener("DOMContentLoaded", function() {
 	});
 
 	// mod
-	for (let i = 0; i < 8; i++) {
+	// port
+	for (
+		let name in fn["pass"]
+	) {
 		$("#mod").append(
 			`
-			<div>
-				<svg
-					class="nut"
-					fill="#111"
-				>
-					<polygon
-						points="
-						50, 25
-						37.5, 46.666666
-						12.5, 46.666666
-						0, 25
-						12.5, 3.333333
-						37.5, 3.333333
-						"
-					/>
-					<circle
-						fill="#060606"
-						cx="25"
-						cy="25"
-						r="12.5"
-					/>
-				</svg>
+			<div
+				class="port"
+			>
+				${dial(name, "mod")}
 
-				<div>${(i % 2 == 0 ? "IN" : "OUT")}</div>
-			</div>
+				<div
+					class="body"
+				>
+					<div>
+						<svg
+							class="nut"
+							fill="#111"
+						>
+							<polygon
+								points="
+								50, 25
+								37.5, 46.666666
+								12.5, 46.666666
+								0, 25
+								12.5, 3.333333
+								37.5, 3.333333
+								"
+							/>
+							<circle
+								fill="#060606"
+								cx="25"
+								cy="25"
+								r="12.5"
+							/>
+						</svg>
+
+						<div>in</div>
+					</div>
+
+					<div>
+						<svg
+							class="nut"
+							fill="#111"
+						>
+							<polygon
+								points="
+								50, 25
+								37.5, 46.666666
+								12.5, 46.666666
+								0, 25
+								12.5, 3.333333
+								37.5, 3.333333
+								"
+							/>
+							<circle
+								fill="#060606"
+								cx="25"
+								cy="25"
+								r="12.5"
+							/>
+						</svg>
+
+						<div>out</div>
+					</div>
+				</div>
+			<div>
 			`
 		);
 	}
 
+	for (
+		let inst in sett["mod"]
+	) {
+		const
+			diff = Math.abs(attr["mod"][inst]["min"] - attr["mod"][inst]["max"]),
+			inc = diff / 8,
+
+			pc = 180 / diff,
+			deg = Math.abs(attr["mod"][inst]["min"] - sett["mod"][inst]) * pc;
+
+		$("#mod .dial." + inst + " .active path").attr(
+			"transform",
+			"translate(42, 0) rotate(" + (-90 - deg) + ")"
+		);
+		$("#mod .dial." + inst + " .pointer").attr(
+			"transform",
+			"rotate(" + (-90 - deg) + ")"
+		);
+	}
+
+	$("#mod .dial").click(function() {
+		const
+			i = $(this).parent().index(),
+			type = $(this).attr("class").split(" ")[1],
+
+			diff = Math.abs(attr["mod"][type]["min"] - attr["mod"][type]["max"]),
+			inc = diff / 8;
+
+		if (dir == 1) {
+			if (sett["mod"][type] + (inc * dir) > attr["mod"][type]["max"]) {
+				sc
+				sett["mod"][type] = attr["mod"][type]["max"];
+			} else {
+				sett["mod"][type] += inc * dir;
+			}
+		}
+
+		if (dir == -1) {
+			if (sett["mod"][type] + (inc * dir) < attr["mod"][type]["min"]) {
+				sett["mod"][type] = attr["osc"][type]["min"];
+			} else {
+				sett["mod"][type] += inc * dir;
+			}
+		}
+
+		const
+			pc = 180 / diff,
+			deg = Math.abs(attr["mod"][type]["min"] - sett["mod"][type]) * pc;
+
+		$(this).find(".active path").attr(
+			"transform",
+			"translate(42, 0) rotate(" + (-90 - deg) + ")"
+		);
+		$(this).find(".pointer").attr(
+			"transform",
+			"rotate(" + (-90 - deg) + ")"
+		);
+	});
+
+	// wire
 	var grab = false,
 			i = null;
 
@@ -702,9 +827,9 @@ document.addEventListener("DOMContentLoaded", function() {
 		});
 
 		for (
-			let inst in attr
+			let inst in attr["osc"]
 		) {
-			$("#sys .node:nth-child(" + (i + 1) + ") .body .attr").append(dial(inst));
+			$("#sys .node:nth-child(" + (i + 1) + ") .body .attr").append(dial(inst, "osc"));
 		}
 	}
 
@@ -717,11 +842,11 @@ document.addEventListener("DOMContentLoaded", function() {
 			let type in sett["osc"][i]["attr"]
 		) {
 			const
-				diff = Math.abs(attr[type]["min"] - attr[type]["max"]),
+				diff = Math.abs(attr["osc"][type]["min"] - attr["osc"][type]["max"]),
 				inc = diff / 8,
 
 				pc = 180 / diff,
-				deg = Math.abs(attr[type]["min"] - sett["osc"][i]["attr"][type]) * pc;
+				deg = Math.abs(attr["osc"][type]["min"] - sett["osc"][i]["attr"][type]) * pc;
 
 			sys[i]["osc"]["de-tune"] = sett["osc"][i]["attr"]["de-tune"];
 			sys[i]["osc"]["rate"] = sett["osc"][i]["attr"]["rate"];
@@ -738,25 +863,25 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 	}
 
-	$(".dial").click(function() {
+	$("#sys .dial").click(function() {
 		const
 			i = $(this).parent().parent().index(),
 			type = $(this).attr("class").split(" ")[1],
 
-			diff = Math.abs(attr[type]["min"] - attr[type]["max"]),
+			diff = Math.abs(attr["osc"][type]["min"] - attr["osc"][type]["max"]),
 			inc = diff / 8;
 
 		if (dir == 1) {
-			if (sett["osc"][i]["attr"][type] + (inc * dir) > attr[type]["max"]) {
-				sett["osc"][i]["attr"][type] = attr[type]["max"];
+			if (sett["osc"][i]["attr"][type] + (inc * dir) > attr["osc"][type]["max"]) {
+				sett["osc"][i]["attr"][type] = attr["osc"][type]["max"];
 			} else {
 				sett["osc"][i]["attr"][type] += inc * dir;
 			}
 		}
 
 		if (dir == -1) {
-			if (sett["osc"][i]["attr"][type] + (inc * dir) < attr[type]["min"]) {
-				sett["osc"][i]["attr"][type] = attr[type]["min"];
+			if (sett["osc"][i]["attr"][type] + (inc * dir) < attr["osc"][type]["min"]) {
+				sett["osc"][i]["attr"][type] = attr["osc"][type]["min"];
 			} else {
 				sett["osc"][i]["attr"][type] += inc * dir;
 			}
@@ -764,7 +889,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 		const
 			pc = 180 / diff,
-			deg = Math.abs(attr[type]["min"] - sett["osc"][i]["attr"][type]) * pc;
+			deg = Math.abs(attr["osc"][type]["min"] - sett["osc"][i]["attr"][type]) * pc;
 
 		switch (type) {
 			case "de-tune":
@@ -812,7 +937,6 @@ document.addEventListener("DOMContentLoaded", function() {
 					val = ((80 - (e.clientY - 46)) * pc) - 1;
 
 				sett["vol"] = val;
-				console.log(val)
 
 				for (
 					let i = 0;

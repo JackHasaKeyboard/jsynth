@@ -89,8 +89,12 @@ $js: #f0db4f;
 	#input {
 		#mod {
 			display: flex;
+			padding: 8px;
+			margin: 16px;
+			border-radius: 6px;
+			background: #111;
 
-			div {
+			.port {
 				margin: 8px;
 				font-family: Arial;
 				font-size: 10px;
@@ -98,8 +102,20 @@ $js: #f0db4f;
 				// letter-spacing: 4px;
 				font-weight: bold;
 				text-align: center;
-				color: #111;
+				color: grey;
 				cursor: pointer;
+
+				.body {
+					display: flex;
+
+					div {
+						flex-grow: 1;
+
+						div {
+							text-transform: uppercase;
+						}
+					}
+				}
 
 				.nut {
 					filter: drop-shadow(0 6px 6px #111);
@@ -204,9 +220,7 @@ $js: #f0db4f;
 	display: flex;
 
 	div {
-		margin-left: auto;
-		margin-right: auto;
-		margin-left: 32px;
+		margin: auto;
 
 		svg {
 			cursor: pointer;

@@ -156,6 +156,40 @@ function descArc(
 	return d;
 }
 
+function port(
+	i
+) {
+	return `
+	<div
+		class="port"
+	>
+		<svg
+			class="nut"
+			fill="#111"
+		>
+			<polygon
+				points="
+				50, 25
+				37.5, 46.666666
+				12.5, 46.666666
+				0, 25
+				12.5, 3.333333
+				37.5, 3.333333
+				"
+			/>
+			<circle
+				fill="#060606"
+				cx="25"
+				cy="25"
+				r="12.5"
+			/>
+		</svg>
+
+		<div>${i == 1 ? "in" : "out"}</div>
+	</div>
+	`;
+}
+
 function dial(
 	type,
 	cat
@@ -846,10 +880,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	// mod
 	// port
+	$("#mod").prepend(port(0));
+
 	for (
 		let name in fn["pass"]
 	) {
-		$("#mod").append(
+		$("#mod > .body").append(
 			`
 			<div
 				class="port"
@@ -859,62 +895,15 @@ document.addEventListener("DOMContentLoaded", function() {
 				<div
 					class="body"
 				>
-					<div>
-						<svg
-							class="nut"
-							fill="#111"
-						>
-							<polygon
-								points="
-								50, 25
-								37.5, 46.666666
-								12.5, 46.666666
-								0, 25
-								12.5, 3.333333
-								37.5, 3.333333
-								"
-							/>
-							<circle
-								fill="#060606"
-								cx="25"
-								cy="25"
-								r="12.5"
-							/>
-						</svg>
-
-						<div>in</div>
-					</div>
-
-					<div>
-						<svg
-							class="nut"
-							fill="#111"
-						>
-							<polygon
-								points="
-								50, 25
-								37.5, 46.666666
-								12.5, 46.666666
-								0, 25
-								12.5, 3.333333
-								37.5, 3.333333
-								"
-							/>
-							<circle
-								fill="#060606"
-								cx="25"
-								cy="25"
-								r="12.5"
-							/>
-						</svg>
-
-						<div>out</div>
-					</div>
+					${port(1)}
+					${port(0)}
 				</div>
 			<div>
 			`
 		);
 	}
+
+	$("#mod").append(port(1));
 
 	for (
 		let inst in sett["mod"]

@@ -15,11 +15,11 @@ const
 			}
 		},
 		"mod": {
-			"high": {
+			"highpass": {
 				"min": 0,
 				"max": 440
 			},
-			"low": {
+			"lowpass": {
 				"min": 0,
 				"max": 440
 			}
@@ -72,9 +72,9 @@ const
 
 	fn = {
 		"pass": {
-			"high": function() {
+			"highpass": function() {
 			},
-			"low": function() {
+			"lowpass": function() {
 			}
 		}
 	};
@@ -114,8 +114,8 @@ var
 			}
 		],
 		"mod": {
-			"high": 0,
-			"low": 0
+			"highpass": 0,
+			"lowpass": 0
 		}
 	},
 
@@ -402,137 +402,6 @@ document.addEventListener("DOMContentLoaded", function() {
 			val = (this.value) * pc;
 
 		sett["vol"] = val;
-	});
-
-	// mod
-	// port
-	for (
-		let name in fn["pass"]
-	) {
-		$("#mod").append(
-			`
-			<div
-				class="port"
-			>
-				${dial(name, "mod")}
-
-				<div
-					class="body"
-				>
-					<div>
-						<svg
-							class="nut"
-							fill="#111"
-						>
-							<polygon
-								points="
-								50, 25
-								37.5, 46.666666
-								12.5, 46.666666
-								0, 25
-								12.5, 3.333333
-								37.5, 3.333333
-								"
-							/>
-							<circle
-								fill="#060606"
-								cx="25"
-								cy="25"
-								r="12.5"
-							/>
-						</svg>
-
-						<div>in</div>
-					</div>
-
-					<div>
-						<svg
-							class="nut"
-							fill="#111"
-						>
-							<polygon
-								points="
-								50, 25
-								37.5, 46.666666
-								12.5, 46.666666
-								0, 25
-								12.5, 3.333333
-								37.5, 3.333333
-								"
-							/>
-							<circle
-								fill="#060606"
-								cx="25"
-								cy="25"
-								r="12.5"
-							/>
-						</svg>
-
-						<div>out</div>
-					</div>
-				</div>
-			<div>
-			`
-		);
-	}
-
-	for (
-		let inst in sett["mod"]
-	) {
-		const
-			diff = Math.abs(attr["mod"][inst]["min"] - attr["mod"][inst]["max"]),
-			inc = diff / 8,
-
-			pc = 180 / diff,
-			deg = Math.abs(attr["mod"][inst]["min"] - sett["mod"][inst]) * pc;
-
-		$("#mod .dial." + inst + " .active path").attr(
-			"transform",
-			"translate(42, 0) rotate(" + (-90 - deg) + ")"
-		);
-		$("#mod .dial." + inst + " .pointer").attr(
-			"transform",
-			"rotate(" + (-90 - deg) + ")"
-		);
-	}
-
-	$("#mod .dial").click(function() {
-		const
-			i = $(this).parent().index(),
-			type = $(this).attr("class").split(" ")[1],
-
-			diff = Math.abs(attr["mod"][type]["min"] - attr["mod"][type]["max"]),
-			inc = diff / 8;
-
-		if (dir == 1) {
-			if (sett["mod"][type] + (inc * dir) > attr["mod"][type]["max"]) {
-				sc
-				sett["mod"][type] = attr["mod"][type]["max"];
-			} else {
-				sett["mod"][type] += inc * dir;
-			}
-		}
-
-		if (dir == -1) {
-			if (sett["mod"][type] + (inc * dir) < attr["mod"][type]["min"]) {
-				sett["mod"][type] = attr["osc"][type]["min"];
-			} else {
-				sett["mod"][type] += inc * dir;
-			}
-		}
-
-		const
-			pc = 180 / diff,
-			deg = Math.abs(attr["mod"][type]["min"] - sett["mod"][type]) * pc;
-
-		$(this).find(".active path").attr(
-			"transform",
-			"translate(42, 0) rotate(" + (-90 - deg) + ")"
-		);
-		$(this).find(".pointer").attr(
-			"transform",
-			"rotate(" + (-90 - deg) + ")"
-		);
 	});
 
 	// wire
@@ -974,6 +843,158 @@ document.addEventListener("DOMContentLoaded", function() {
 	analyser.connect(proc);
 	proc.connect(ctxAudio.destination);
 	vol.connect(ctxAudio.destination);
+
+	// mod
+	// port
+	for (
+		let name in fn["pass"]
+	) {
+		$("#mod").append(
+			`
+			<div
+				class="port"
+			>
+				${dial(name, "mod")}
+
+				<div
+					class="body"
+				>
+					<div>
+						<svg
+							class="nut"
+							fill="#111"
+						>
+							<polygon
+								points="
+								50, 25
+								37.5, 46.666666
+								12.5, 46.666666
+								0, 25
+								12.5, 3.333333
+								37.5, 3.333333
+								"
+							/>
+							<circle
+								fill="#060606"
+								cx="25"
+								cy="25"
+								r="12.5"
+							/>
+						</svg>
+
+						<div>in</div>
+					</div>
+
+					<div>
+						<svg
+							class="nut"
+							fill="#111"
+						>
+							<polygon
+								points="
+								50, 25
+								37.5, 46.666666
+								12.5, 46.666666
+								0, 25
+								12.5, 3.333333
+								37.5, 3.333333
+								"
+							/>
+							<circle
+								fill="#060606"
+								cx="25"
+								cy="25"
+								r="12.5"
+							/>
+						</svg>
+
+						<div>out</div>
+					</div>
+				</div>
+			<div>
+			`
+		);
+	}
+
+	for (
+		let inst in sett["mod"]
+	) {
+		const
+			diff = Math.abs(attr["mod"][inst]["min"] - attr["mod"][inst]["max"]),
+			inc = diff / 8,
+
+			pc = 180 / diff,
+			deg = Math.abs(attr["mod"][inst]["min"] - sett["mod"][inst]) * pc;
+
+		$("#mod .dial." + inst + " .active path").attr(
+			"transform",
+			"translate(42, 0) rotate(" + (-90 - deg) + ")"
+		);
+		$("#mod .dial." + inst + " .pointer").attr(
+			"transform",
+			"rotate(" + (-90 - deg) + ")"
+		);
+	}
+
+	$("#mod .dial").click(function() {
+		const
+			i = $(this).parent().index(),
+			type = $(this).attr("class").split(" ")[1],
+
+			diff = Math.abs(attr["mod"][type]["min"] - attr["mod"][type]["max"]),
+			inc = diff / 8;
+
+		if (dir == 1) {
+			if (sett["mod"][type] + (inc * dir) > attr["mod"][type]["max"]) {
+				sett["mod"][type] = attr["mod"][type]["max"];
+			} else {
+				sett["mod"][type] += inc * dir;
+			}
+		}
+
+		if (dir == -1) {
+			if (sett["mod"][type] + (inc * dir) < attr["mod"][type]["min"]) {
+				sett["mod"][type] = attr["osc"][type]["min"];
+			} else {
+				sett["mod"][type] += inc * dir;
+			}
+		}
+
+		const
+			pc = 180 / diff,
+			deg = Math.abs(attr["mod"][type]["min"] - sett["mod"][type]) * pc;
+
+		$(this).find(".active path").attr(
+			"transform",
+			"translate(42, 0) rotate(" + (-90 - deg) + ")"
+		);
+		$(this).find(".pointer").attr(
+			"transform",
+			"rotate(" + (-90 - deg) + ")"
+		);
+
+		filt[i].frequency.setValueAtTime(sett["mod"][type], ctxAudio.currentTime)
+	});
+
+	// filter
+	var filt = [];
+	for (
+		let inst in attr["mod"]
+	) {
+		let tmp = ctxAudio.createBiquadFilter();
+		tmp.type = inst;
+
+		for (
+			let i = 0;
+			i < 4;
+			i++
+		) {
+			osc[i].connect(tmp);
+		}
+		tmp.connect(ctxAudio.destination);
+
+		filt.push(tmp);
+	}
 });
 
 $(document).keydown(function(e) {

@@ -89,15 +89,21 @@ $js: #f0db4f;
 	#input {
 		#mod {
 			display: flex;
+			flex-direction: column;
 			padding: 8px;
 			margin: 16px;
 			border-radius: 6px;
 			background: #111;
 
+			.body {
+				display: flex;
+			}
+
 			.port {
 				margin: 8px;
 				font-family: Arial;
 				font-size: 10px;
+				text-transform: uppercase;
 				// font-size: 12px;
 				// letter-spacing: 4px;
 				font-weight: bold;
@@ -110,10 +116,6 @@ $js: #f0db4f;
 
 					div {
 						flex-grow: 1;
-
-						div {
-							text-transform: uppercase;
-						}
 					}
 				}
 
@@ -126,8 +128,9 @@ $js: #f0db4f;
 
 			.cable {
 				position: absolute;
-				z-index: 1000;
 				pointer-events: none;
+				left: 0;
+				top: 0;
 			}
 		}
 	}

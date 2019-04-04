@@ -438,105 +438,6 @@ document.addEventListener("DOMContentLoaded", function() {
 		sett["vol"] = val;
 	});
 
-	// wire
-	var grab = false,
-			i = null;
-
-	function toHex(d) {
-		return ("0"+(Number(d).toString(16))).slice(-2).toUpperCase()
-	}
-
-	$("#mod div").mousedown(function() {
-		var no = $("#mod .cable").length,
-				inc = Math.floor((0xFFFFFF / 8) / 3),
-
-				col = (inc * no).toString(16);
-
-		$("#mod").append(
-			`
-			<svg
-				class="cable"
-				id="active"
-				width="1000px"
-				fill="transparent"
-				stroke="#${col}"
-				stroke-width="10px"
-				stroke-linecap="round"
-				overflow="visible"
-			>
-				<path
-					d="M " + start.x + ", " + start.y +
-					" C " + start.x + ", " + start.y + " " + mid + ", " + (600 - mid) + " " + end.x + ", " + end.y
-				/>
-			</svg>
-			`
-		);
-
-		const offset = {
-						x: $(this).offset().left,
-						y: $(this).offset().top
-					},
-					start = {
-						x: (offset.x - 8) + ($(this).width() / 2),
-						y: 25 + 8
-					};
-
-		var end = {
-					x: event.clientX - 8,
-					y: event.clientY - offset.y + 8
-				},
-				mid = start.x + (end.x - start.x) / 2;
-
-		grab = true;
-
-		$("#mod").mousemove(function() {
-			if (grab) {
-				end = {
-					x: event.clientX - 8,
-					y: event.clientY - offset.y + 8
-				};
-
-				mid = start.x + (end.x - start.x) / 2;
-
-				$("#mod .cable#active path").attr(
-					"d",
-					"M " + start.x + ", " + start.y + " C " + start.x + ", " + start.y + " " + mid + ", " + (600 - mid) + " " + end.x + ", " + end.y
-				);
-			}
-		});
-
-		$("#mod div").mouseenter(function() {
-			i = $(this).index();
-		});
-
-		$("#mod div").mouseleave(function() {
-			i = null;
-		});
-
-		$("#mod div").mouseup(function() {
-			if (i) {
-				const port = $(this);
-
-				end = {
-					x: port.offset().left + 8 + 8,
-					y: 25 + 8
-				};
-
-				$("#mod .cable#active path").attr(
-					"d",
-					"M " + start.x + ", " + start.y +
-					" C " + start.x + ", " + start.y + " " + mid + ", " + (600 - mid) + " " + end.x + ", " + end.y
-				);
-
-				$(".cable#active").removeAttr("id");
-			} else {
-				$("#mod .cable#active").remove();
-			}
-
-			grab = false;
-		});
-	});
-
 	// key
 	// white
 	for (let i = 0; i < 8; i++) {
@@ -978,12 +879,105 @@ document.addEventListener("DOMContentLoaded", function() {
 			i < 4;
 			i++
 		) {
-			osc[i].connect(tmp);
+			// sys[i].connect(tmp);
 		}
 		tmp.connect(ctxAudio.destination);
 
 		filt.push(tmp);
 	}
+
+	// wire
+	var
+		grab = false,
+		targ = null;
+
+	$("#mod .nut").mousedown(function(e) {
+		grab = true;
+
+		const start = {
+			x: $(this).offset().left + 16 + 8,
+			y: $(this).offset().top + 16 + 8 
+		};
+
+		let
+			end = {
+				x: e.pageX + 16 + 8,
+				y: e.pageY + 16 + 8
+			},
+			mid = {
+				x: (start.x + (end.x - start.x)) / 2,
+				y: ((start.y + (end.y - start.y)) / 2) + 600
+			};
+
+		$("#mod").append(
+			`
+			<svg
+				class="cable"
+				id="active"
+				width="100%"
+				fill="transparent"
+				stroke="${js}"
+				stroke-width="10px"
+				stroke-linecap="round"
+				overflow="visible"
+			>
+				<path
+					d="M ${start.x}, ${start.y} C ${start.x}, ${start.y} ${mid.x}, ${mid.y} ${end.x}, ${end.y}"
+				/>
+			</svg>
+			`
+		);
+
+		$(document).mousemove(function(e) {
+			if (grab) {
+				end = {
+					x: e.pageX,
+					y: e.pageY
+				};
+				mid = {
+					x: (start.x + (end.x - start.x)) / 2,
+					y: ((start.y + (end.y - start.y)) / 2) + 600
+				};
+
+				$("#mod .cable#active path").attr(
+					"d",
+					`M ${start.x}, ${start.y}
+					C ${start.x}, ${start.y} ${mid.x}, ${mid.y} ${end.x}, ${end.y}
+					`
+				);
+
+				$(".nut").mouseenter(function() {
+					targ = $(this);
+				});
+				$(".nut").mouseleave(function() {
+					targ = null;
+				});
+			}
+		});
+
+		$(document).mouseup(function() {
+			grab = false;
+
+			if (targ) {
+				end = {
+					x: targ.offset().left + 16 + 8,
+					y: targ.offset().top + 16 + 8
+				};
+				mid = {
+					x: (start.x + (end.x - start.x)) / 2,
+					y: ((start.y + (end.y - start.y)) / 2) + 600
+				};
+
+				$("#mod .cable#active path").attr(
+					"d",
+					`M ${start.x}, ${start.y} C ${start.x}, ${start.y} ${mid.x}, ${mid.y} ${end.x}, ${end.y}`
+				);
+				$("#mod .cable#active").removeAttr("id");
+			} else {
+				$("#mod .cable#active").remove();
+			}
+		});
+	});
 });
 
 $(document).keydown(function(e) {

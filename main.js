@@ -188,9 +188,38 @@ function port(
 	>
 		<svg
 			class="nut"
-			fill="#111"
 		>
+			<filter
+				id="dropShadow"
+				height="110%"
+			>
+				<feGaussianBlur
+					in="SourceAlpha"
+					stdDeviation="1.6"
+				/>
+				<feOffset
+					dx="0"
+					dy="0"
+					result="offsetblur"
+				/>
+
+				<feComponentTransfer>
+					<feFuncA
+						type="linear"
+						slope="0.32"
+					/>
+				</feComponentTransfer>
+				<feMerge>
+					<feMergeNode/>
+					<feMergeNode
+						in="SourceGraphic"
+					/>
+				</feMerge>
+			</filter>
+
 			<polygon
+				fill="#222"
+				style="filter:url(#dropShadow)"
 				points="
 				50, 25
 				37.5, 46.666666

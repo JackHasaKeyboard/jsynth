@@ -121,6 +121,29 @@ var
 
 	dir = 1;
 
+
+function cable(
+	col,
+	pos
+) {
+	return `
+	<svg
+		class="cable"
+		id="active"
+		width="100%"
+		fill="transparent"
+		stroke="rgb(${col[0]}, ${col[1]}, ${col[2]})"
+		stroke-width="10px"
+		stroke-linecap="round"
+		overflow="visible"
+	>
+		<path
+			d="M ${pos.start.x}, ${pos.start.y} C ${pos.start.x}, ${pos.start.y} ${pos.mid.x}, ${pos.mid.y} ${pos.end.x}, ${pos.end.y}"
+		/>
+	</svg>
+	`;
+}
+
 function polarToCart(
 	centerX,
 	centerY,
@@ -949,22 +972,14 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 
 		$("#mod").append(
-			`
-			<svg
-				class="cable"
-				id="active"
-				width="100%"
-				fill="transparent"
-				stroke="rgb(${col[0]}, ${col[1]}, ${col[2]})"
-				stroke-width="10px"
-				stroke-linecap="round"
-				overflow="visible"
-			>
-				<path
-					d="M ${start.x}, ${start.y} C ${start.x}, ${start.y} ${mid.x}, ${mid.y} ${end.x}, ${end.y}"
-				/>
-			</svg>
-			`
+			cable(
+				col,
+				{
+					"start": start,
+					"mid": mid,
+					"end": end
+				}
+			)
 		);
 
 		$(document).mousemove(function(e) {

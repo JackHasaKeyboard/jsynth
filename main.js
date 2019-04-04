@@ -377,7 +377,9 @@ function dial(
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-	const js = "#f0db4f";
+	const
+		js = "#f0db4f",
+		grey = "#323330";
 
 	/* audio */
 	const ctxAudio = new (window.AudioContext || window.webkitAudioContext)();
@@ -891,6 +893,10 @@ document.addEventListener("DOMContentLoaded", function() {
 		grab = false,
 		targ = null;
 
+	function toHex(d) {
+		return ("0" + (Number(d).toString(16))).slice(-2).toUpperCase();
+	}
+
 	$("#mod .nut").mousedown(function(e) {
 		grab = true;
 
@@ -907,7 +913,40 @@ document.addEventListener("DOMContentLoaded", function() {
 			mid = {
 				x: (start.x + (end.x - start.x)) / 2,
 				y: ((start.y + (end.y - start.y)) / 2) + 600
-			};
+			},
+
+			c = $("#mod .cable").length,
+			roof = ($("#mod .nut").length / 2) - 1,
+
+			fst = [240, 219, 79],
+			snd = [50, 51, 48],
+
+			diff = [];
+		for (
+			let i = 0;
+			i < 3;
+			i++
+		) {
+			diff[i] = snd[i] - fst[i];
+		}
+
+		let inc = [];
+		for (
+			let i = 0;
+			i < 3;
+			i++
+		) {
+			inc[i] = diff[i] / roof;
+		}
+
+		let col = [];
+		for (
+			let i = 0;
+			i < 3;
+			i++
+		) {
+			col[i] = fst[i] + (c * inc[i]);
+		}
 
 		$("#mod").append(
 			`
@@ -916,7 +955,7 @@ document.addEventListener("DOMContentLoaded", function() {
 				id="active"
 				width="100%"
 				fill="transparent"
-				stroke="${js}"
+				stroke="rgb(${col[0]}, ${col[1]}, ${col[2]})"
 				stroke-width="10px"
 				stroke-linecap="round"
 				overflow="visible"

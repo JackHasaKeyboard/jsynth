@@ -144,7 +144,7 @@ function cable(
 		id="active"
 		fill="transparent"
 		stroke="rgb(${col[0]}, ${col[1]}, ${col[2]})"
-		stroke-width="10px"
+		stroke-width="10"
 		stroke-linecap="round"
 		width="100%"
 		height="100%"
@@ -654,7 +654,7 @@ document.addEventListener("DOMContentLoaded", function() {
 						>
 							<path
 								stroke=${js}
-								stroke-width="4px"
+								stroke-width="4"
 								stroke-linecap="round"
 								fill="transparent"
 								d="${form[sett["osc"][i]["form"]]}"
@@ -1089,7 +1089,7 @@ document.addEventListener("DOMContentLoaded", function() {
 						>
 							<path
 								stroke=${js}
-								stroke-width="4px"
+								stroke-width="4"
 								stroke-linecap="round"
 								fill="transparent"
 								d="${form[sett["osc"][0]["form"]]}"

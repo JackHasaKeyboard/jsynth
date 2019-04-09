@@ -594,27 +594,6 @@ document.addEventListener("DOMContentLoaded", function() {
 		vol.gain.value = -1;
 	});
 
-	// launchpad
-	for (let r = 0; r < 3; r++) {
-		$("#launchpad").append("<tr></tr>");
-
-		for (let c = 0; c < 3; c++) {
-			$("#launchpad tr:nth-child(" + (r + 1) + ")").append("<td><div></div></td>");
-		}
-	}
-
-	$("#launchpad div").mousedown(function() {
-		$(this).css({
-			"box-shadow": "none"
-		});
-	});
-
-	$("#launchpad div").mouseup(function() {
-		$(this).css({
-			"box-shadow": "0 4px 0 0 #161616"
-		});
-	});
-
 	/* oscillator */
 	var sys = [];
 	for (

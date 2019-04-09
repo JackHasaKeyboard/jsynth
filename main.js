@@ -14,6 +14,12 @@ const
 				"max": 1
 			}
 		},
+		"lfo": {
+			"rate": {
+				"min": 0,
+				"max": 20
+			}
+		},
 		"mod": {
 			"highpass": {
 				"min": 0,
@@ -113,6 +119,12 @@ var
 				}
 			}
 		],
+		"lfo": {
+			"form": "sine",
+			"attr": {
+				"rate": 0
+			}
+		},
 		"mod": {
 			"highpass": 0,
 			"lowpass": 0
@@ -449,7 +461,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	var data = new Uint8Array(analyser.frequencyBinCount);
 
 	const
-		canv = document.getElementById("osc"),
+		canv = document.getElementById("disp"),
 		ctxCanv = canv.getContext("2d");
 
 	proc.onaudioprocess = function() {
@@ -630,7 +642,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		i < 4;
 		i++
 	) {
-		$("#sys").append(`
+		$("#osc").append(`
 			<div
 				class="node"
 			>
@@ -721,7 +733,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 	}
 
-	$("#sys .dial").click(function() {
+	$("#osc .dial").click(function() {
 		const
 			i = $(this).parent().parent().index(),
 			type = $(this).attr("class").split(" ")[1],
@@ -1060,6 +1072,132 @@ document.addEventListener("DOMContentLoaded", function() {
 				$("#mod .cable#active").remove();
 			}
 		});
+	});
+
+	// LFO
+	$("#lfo").append(
+		`
+		<div
+			class="node"
+		>
+			<div
+				class="head"
+			>
+				<h3>LFO</h3>
+			</div>
+
+			<div
+				class="body"
+			>
+				<div
+					class="form"
+				>
+					<select
+						class="input"
+					></select>
+
+					<div
+						class="form"
+					>
+						<svg
+							width="100"
+							height="16"
+							overflow="visible"
+							class="wave"
+						>
+							<path
+								stroke=${js}
+								stroke-width="4px"
+								stroke-linecap="round"
+								fill="transparent"
+								d="${form[sett["osc"][0]["form"]]}"
+							/>
+						</svg>
+					</div>
+				</div>
+
+				<div
+					class="attr"
+				>
+					${dial("rate", "lfo")}
+				</div>
+			<div>
+		</div>
+		`
+	);
+
+	for (const wave in form) {
+		$("#sys #lfo .node .body .form .input").append("<option>" + wave + "</option>");
+	}
+
+	$("#lfo .input").change(function() {
+		lfo["type"] = this.value;
+
+		$(this).parent().find(".wave path").attr("d", form[this.value]);
+	});
+
+	var lfo = ctxAudio.createOscillator();
+	lfo.frequency.value = sett["lfo"]["attr"]["rate"];
+	lfo.connect(ctxAudio.destination);
+	lfo.start();
+
+	for (
+		let inst in sett["lfo"]["attr"]
+	) {
+		const
+			diff = Math.abs(attr["lfo"][inst]["min"] - attr["lfo"][inst]["max"]),
+			inc = diff / 8,
+
+			pc = 180 / diff,
+			deg = Math.abs(attr["lfo"]["rate"]["min"] - sett["lfo"]["attr"]["rate"]) * pc;
+
+		$("#lfo .dial." + inst + " .active path").attr(
+			"transform",
+			"translate(42, 0) rotate(" + (-90 - deg) + ")"
+		);
+		$("#lfo .dial." + inst + " .pointer").attr(
+			"transform",
+			"rotate(" + (-90 - deg) + ")"
+		);
+	}
+
+	$("#lfo .dial").click(function() {
+		const
+			type = $(this).attr("class").split(" ")[1],
+
+			diff = Math.abs(attr["lfo"][type]["min"] - attr["lfo"][type]["max"]),
+			inc = diff / 8;
+
+		if (dir == 1) {
+			if (sett["lfo"]["attr"][type] + (inc * dir) > attr["lfo"][type]["max"]) {
+				sett["lfo"]["attr"][type] = attr["lfo"][type]["max"];
+			} else {
+				sett["lfo"]["attr"][type] += inc * dir;
+			}
+		}
+
+		if (dir == -1) {
+			if (sett["lfo"][type] + (inc * dir) < attr["lfo"][type]["min"]) {
+				sett["lfo"]["attr"][type] = attr["lfo"][type]["min"];
+			} else {
+				sett["lfo"]["attr"][type] += inc * dir;
+			}
+		}
+
+		const
+			pc = 180 / diff,
+			deg = Math.abs(attr["lfo"][type]["min"] - sett["lfo"]["attr"][type]) * pc;
+
+		$(this).find(".active path").attr(
+			"transform",
+			"translate(42, 0) rotate(" + (-90 - deg) + ")"
+		);
+		$(this).find(".pointer").attr(
+			"transform",
+			"rotate(" + (-90 - deg) + ")"
+		);
+
+		lfo["frequency"]["value"] = sett["lfo"]["attr"][type]
 	});
 });
 

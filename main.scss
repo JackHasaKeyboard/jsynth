@@ -14,7 +14,12 @@ $js: #f0db4f;
 	user-select: none;
 }
 
+body {
+	display: inline-block;
+}
+
 #unit {
+	display: inline-block;
 	background: #222;
 	border-radius: 12px;
 	// border-bottom: 60px solid #161616;

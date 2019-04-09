@@ -142,11 +142,12 @@ function cable(
 	<svg
 		class="cable"
 		id="active"
-		width="100%"
 		fill="transparent"
 		stroke="rgb(${col[0]}, ${col[1]}, ${col[2]})"
 		stroke-width="10px"
 		stroke-linecap="round"
+		width="100%"
+		height="100%"
 		overflow="visible"
 	>
 		<path
@@ -266,6 +267,8 @@ function dial(
 			<svg
 				overflow="visible"
 				id="shadow"
+				width="64"
+				height="64"
 			>
 				<filter
 					id="dropShadow"
@@ -307,7 +310,7 @@ function dial(
 			</svg>
 
 			<svg
-				width="84"
+				width="64"
 				height="44"
 				transform="translate(0, 32)"
 				fill="transparent"

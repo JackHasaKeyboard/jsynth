@@ -489,24 +489,6 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 	}
 
-	var vol = ctxAudio.createGain();
-
-	// volume
-	vol.gain.value = sett["vol"];
-
-	const
-		pc = 100 / 2,
-		val = (sett["vol"] + 1) * pc;
-	$("#vol").val(val);
-
-	$("#vol").change(function() {
-		const
-			pc = (2 / 100),
-			val = (this.value) * pc;
-
-		sett["vol"] = val;
-	});
-
 	// key
 	// white
 	for (let i = 0; i < 8; i++) {
@@ -547,10 +529,16 @@ document.addEventListener("DOMContentLoaded", function() {
 			"box-shadow": "0 6px #333"
 		});
 
-		const i = $(this).index();
+		const n = $(this).index();
 
-		osc.frequency.value = c4 + (i * (octave / 8));
-		vol.gain.value = sett["vol"];
+		for (
+			let i = 0;
+			i < 4;
+			i++
+		) {
+			sys[i]["osc"]["frequency"]["value"] = c4 + (n * (octave / 8));
+			sys[i]["gain"]["gain"]["value"] = sett["vol"];
+		}
 	});
 
 	$("#white div").mouseup(function() {
@@ -559,7 +547,13 @@ document.addEventListener("DOMContentLoaded", function() {
 			"box-shadow": "0 10px #333"
 		});
 
-		vol.gain.value = -1;
+		for (
+			let i = 0;
+			i < 4;
+			i++
+		) {
+			sys[i]["gain"]["gain"]["value"] = -1;
+		}
 	});
 	$("#white div").mouseleave(function() {
 		$(this).find(".key").css({
@@ -567,7 +561,13 @@ document.addEventListener("DOMContentLoaded", function() {
 			"box-shadow": "0 10px #333"
 		});
 
-		vol.gain.value = -1;
+		for (
+			let i = 0;
+			i < 4;
+			i++
+		) {
+			sys[i]["gain"]["gain"]["value"] = -1;
+		}
 	});
 
 	// black
@@ -577,7 +577,16 @@ document.addEventListener("DOMContentLoaded", function() {
 			"box-shadow": "0 6px #333"
 		});
 
-		vol.gain.value = sett["vol"];
+		const n = $(this).index();
+
+		for (
+			let i = 0;
+			i < 4;
+			i++
+		) {
+			sys[i]["osc"]["frequency"]["value"] = c4 + ((n * (octave / 8)) + ((octave / 8) / 2));
+			sys[i]["gain"]["gain"]["value"] = sett["vol"];
+		}
 	});
 
 	$("#black div").mouseup(function() {
@@ -586,7 +595,13 @@ document.addEventListener("DOMContentLoaded", function() {
 			"box-shadow": "0 10px #333"
 		});
 
-		vol.gain.value = -1;
+		for (
+			let i = 0;
+			i < 4;
+			i++
+		) {
+			sys[i]["gain"]["gain"]["value"] = -1;
+		}
 	});
 	$("#black div").mouseleave(function() {
 		$(this).find(".key").css({
@@ -594,7 +609,13 @@ document.addEventListener("DOMContentLoaded", function() {
 			"box-shadow": "0 10px #333"
 		});
 
-		vol.gain.value = -1;
+		for (
+			let i = 0;
+			i < 4;
+			i++
+		) {
+			sys[i]["gain"]["gain"]["value"] = -1;
+		}
 	});
 
 	/* oscillator */
@@ -790,14 +811,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
 				sett["vol"] = val;
 
-				for (
-					let i = 0;
-					i < 4;
-					i++
-				) {
-					sys[i]["gain"]["gain"]["value"] = sett["vol"];
-				}
-
 				$("#vol #thumb").css(
 					"margin-top",
 					e.clientY - 134
@@ -825,7 +838,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	analyser.connect(proc);
 	proc.connect(ctxAudio.destination);
-	vol.connect(ctxAudio.destination);
 
 	// mod
 	// port

@@ -29,6 +29,10 @@ const
 				"min": 0,
 				"max": 440
 			}
+		},
+		"vol": {
+			"min": -1,
+			"max": 1
 		}
 	},
 
@@ -87,7 +91,7 @@ const
 
 var
 	sett = {
-		"vol": -1,
+		"vol": 0.2,
 		"osc": [
 			{
 				"form": "sine",
@@ -776,11 +780,6 @@ document.addEventListener("DOMContentLoaded", function() {
 				sys[i]["osc"]["frequency"]["value"] = sett["osc"][i]["attr"]["rate"];
 
 				break;
-
-			case "gain":
-				sys[i]["gain"]["gain"]["value"] = sett["osc"][i]["attr"]["gain"] - 1;
-
-				break;
 		}
 
 		$(this).find(".active path").attr(
@@ -794,33 +793,64 @@ document.addEventListener("DOMContentLoaded", function() {
 	});
 
 	// volume
+	let
+		diff = Math.abs(48 - 172),
+
+		pc = diff / Math.abs(attr["vol"]["min"] - attr["vol"]["max"]),
+
+		pos = (sett["vol"] + 1) * pc;
+
 	$("#vol #thumb").css(
 		"margin-top",
-		(-(sett["vol"]["val"] * 10) - 8) + "px"
+		-pos - 12
 	);
 	$("#vol .active").css({
-		"height": (sett["vol"]["val"] * 10) + "px",
-		"margin-top": -(sett["vol"]["val"] * 10) + "px"
+		"height": 80 - (pos - 62) + 8,
+		"margin-top": (-(80 - (pos - 62))) - 8
 	});
-	$(document).mousemove(function(e) {
-		if (e.which) {
-			if (e.clientY > 46 && e.clientY < 126) {
+
+	var slide = false;
+	$("#vol #thumb").mousedown(function() {
+		slide = true;
+
+		$(document).mousemove(function(e) {
+			if (slide) {
+				let pos;
+				if (e.pageY > 48 && e.pageY < 172) {
+					pos = e.pageY;
+				} else {
+					if (e.pageY < 48) {
+						pos = 48;
+					}
+
+					if (e.pageY > 172) {
+						pos = 172;
+					}
+				}
+
 				const
-					pc = (2 / 100),
-					val = ((80 - (e.clientY - 46)) * pc) - 1;
+					diff = Math.abs(48 - 172),
+					delta = Math.abs(pos - 172),
+
+					pc = Math.abs(attr["vol"]["min"] - attr["vol"]["max"]) / diff,
+					val = (delta * pc) - 1;
 
 				sett["vol"] = val;
 
 				$("#vol #thumb").css(
 					"margin-top",
-					e.clientY - 134
+					pos - (172 + 8 + 4)
 				);
 				$("#vol .active").css({
-					"height": 80 - (e.clientY - 46),
-					"margin-top": -(80 - (e.clientY - 46))
+					"height": 80 - (pos - 84) + 8,
+					"margin-top": (-(80 - (pos - 84))) - 8
 				});
 			}
-		}
+		});
+
+		$(document).mouseup(function() {
+			slide = false;
+		});
 	});
 
 	// connect

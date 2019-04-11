@@ -161,38 +161,33 @@ function cable(
 }
 
 function polarToCart(
-	centerX,
-	centerY,
+	center,
 	radius,
-	angleInDeg
+	deg
 ) {
-	var angleInRad = (angleInDeg - 90) * Math.PI / 180.0;
+	var radian = (deg - 90) * Math.PI / 180.0;
 
 	return {
-		x: centerX + (radius * Math.cos(angleInRad)),
-		y: centerY + (radius * Math.sin(angleInRad))
+		x: center.x + (radius * Math.cos(radian)),
+		y: center.y + (radius * Math.sin(radian))
 	};
 }
 
-function descArc(
-	x,
-	y,
+function arc(
+	pos,
 	radius,
-	startAngle,
-	endAngle
+	angle
 ) {
 	var
-		start = polarToCart(x, y, radius, endAngle),
-		end = polarToCart(x, y, radius, startAngle),
+		start = polarToCart({x: pos.x, y: pos.y}, radius, angle.end),
+		end = polarToCart({x: pos.x, y: pos.y}, radius, angle.start),
 
-		largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1",
+		lg = angle.end - angle.start <= 180 ? "0" : "1";
 
-		d = [
-			"M", start.x, start.y,
-			"A", radius, radius, 0, largeArcFlag, 0, end.x, end.y
-		].join(" ");
-
-	return d;
+	return `
+		M ${start.x}, ${start.y}
+		A ${radius}, ${radius}, 0, ${lg}, 0, ${end.x}, ${end.y}
+	`;
 }
 
 function port(
@@ -336,7 +331,7 @@ function dial(
 			>
 				<path
 					transform="translate(42, 0)"
-					d="${descArc(0, 0, 26, 0, 180)}"
+					d="${arc({x: 0, y: 0}, 26, {start: 0, end: 180})}"
 					fill="transparent"
 					stroke="#f0db4f"
 					stroke-width="4"

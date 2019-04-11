@@ -458,8 +458,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	var data = new Uint8Array(analyser.frequencyBinCount);
 
-	var osc = ctxAudio.createOscillator();
-
 	/* volume */
 	let
 		diff = Math.abs(48 - 172),

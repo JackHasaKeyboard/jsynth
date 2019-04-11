@@ -137,7 +137,6 @@ var
 
 	dir = 1;
 
-
 function cable(
 	col,
 	pos
@@ -167,7 +166,7 @@ function polarToCart(
 	radius,
 	angleInDeg
 ) {
-	var angleInRad = (angleInDeg-90) * Math.PI / 180.0;
+	var angleInRad = (angleInDeg - 90) * Math.PI / 180.0;
 
 	return {
 		x: centerX + (radius * Math.cos(angleInRad)),
@@ -422,7 +421,7 @@ function dial(
 					text-anchor="middle"
 					transform="translate(0, -26)"
 				>
-					` + type + `
+					${type}
 				</text>
 
 				<text
@@ -431,7 +430,7 @@ function dial(
 					text-anchor="end"
 					transform="translate(-54, 0)"
 				>
-					` + attr[cat][type]["min"] + `
+					${attr[cat][type]["min"]}
 				</text>
 				<text
 					class="mark"
@@ -439,7 +438,7 @@ function dial(
 					text-anchor="right"
 					transform="translate(54, 0)"
 				>
-					` + attr[cat][type]["max"] + `
+					${attr[cat][type]["max"]}
 				</text>
 			</svg>
 		</div>
@@ -729,11 +728,11 @@ document.addEventListener("DOMContentLoaded", function() {
 			sys[i]["osc"]["rate"] = sett["osc"][i]["attr"]["rate"];
 			sys[i]["gain"]["gain"]["value"] = sett["osc"][i]["attr"]["gain"];
 
-			$("#sys .node:nth-child(" + (i + 1)+ ") .dial." + type + " .active path").attr(
+			$("#sys .node:nth-child(" + (i + 1) + ") .dial." + type + " .active path").attr(
 				"transform",
 				"translate(42, 0) rotate(" + (-90 - deg) + ")"
 			);
-			$("#sys .node:nth-child(" + (i + 1)+ ") .dial." + type + " .pointer").attr(
+			$("#sys .node:nth-child(" + (i + 1) + ") .dial." + type + " .pointer").attr(
 				"transform",
 				"rotate(" + (-90 - deg) + ")"
 			);
@@ -1221,7 +1220,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			"rotate(" + (-90 - deg) + ")"
 		);
 
-		lfo["frequency"]["value"] = sett["lfo"]["attr"][type]
+		lfo["frequency"]["value"] = sett["lfo"]["attr"][type];
 	});
 });
 

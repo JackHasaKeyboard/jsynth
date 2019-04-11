@@ -481,7 +481,11 @@ document.addEventListener("DOMContentLoaded", function() {
 			canv.height
 		);
 
-		for (let i = 0; i < data.length; i++) {
+		for (
+			let i = 0;
+			i < data.length;
+			i++
+		) {
 			ctxCanv.fillStyle = "#111";
 			ctxCanv.fillRect(
 				i,
@@ -494,13 +498,21 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	// key
 	// white
-	for (let i = 0; i < 8; i++) {
+	for (
+		let i = 0;
+		i < 8;
+		i++
+	) {
 		$("#board #white").append("<div><div class='key'></div></div>");
 	}
 
 	// black
 	var flat = true;
-	for (let i = 0; i < 8; i++) {
+	for (
+		let i = 0;
+		i < 8;
+		i++
+	) {
 		$("#board #black").append("<div></div>");
 
 		if (i % 3 == 0 && i !== 0) {
@@ -692,7 +704,9 @@ document.addEventListener("DOMContentLoaded", function() {
 			</div>
 		`);
 
-		for (const wave in form) {
+		for (
+			const wave in form
+		) {
 			$("#sys .node:nth-child(" + (i + 1) + ") .body .form .input").append("<option>" + wave + "</option>");
 		}
 
@@ -1149,7 +1163,9 @@ document.addEventListener("DOMContentLoaded", function() {
 		`
 	);
 
-	for (const wave in form) {
+	for (
+		const wave in form
+	) {
 		$("#sys #lfo .node .body .form .input").append("<option>" + wave + "</option>");
 	}
 

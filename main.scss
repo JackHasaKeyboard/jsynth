@@ -145,7 +145,7 @@ body {
 		display: flex;
 
 		#board {
-			padding: 6px;
+			padding: 8px;
 			display: flex;
 			padding-right: 30px;
 
@@ -154,14 +154,13 @@ body {
 				display: flex;
 
 				div {
-					padding: 6px;
-					margin: 6px;
-					width: calc((0.875in) / 2);
+					padding: 8px;
+					margin: 1px;
+					width: calc((48in / 52) / 2);
 
 					.key {
-						width: calc((0.875in) / 2);
+						width: calc((48in / 52) / 2);
 						border-radius: 0 0 6px 6px;
-						box-shadow: 0 10px #333;
 						cursor: pointer;
 					}
 				}
@@ -183,7 +182,7 @@ body {
 				div {
 					div {
 						background: #161616;
-						height: calc((5in / 8) * 3);
+						height: calc(3.5in / 2);
 					}
 				}
 			}

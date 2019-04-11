@@ -857,20 +857,22 @@ document.addEventListener("DOMContentLoaded", function() {
 
 		octave = Math.abs(c4 - c5);
 
+		rng = 14;
+
 	// white
 	for (
 		let i = 0;
-		i < 8;
+		i < rng;
 		i++
 	) {
 		$("#board #white").append("<div><div class='key'></div></div>");
 	}
 
 	$("#white > div").mousedown(function() {
-		$(this).find(".key").css({
-			"height": "calc(calc(" + 6 + "in / 2) * 0.84)",
-			"box-shadow": "0 6px #333"
-		});
+		$(this).find(".key").css(
+			"height",
+			"calc(calc(" + 6 + "in / 2) * 0.84)"
+		);
 
 		const n = $(this).index();
 
@@ -885,10 +887,10 @@ document.addEventListener("DOMContentLoaded", function() {
 	});
 
 	$("#white div").mouseup(function() {
-		$(this).find(".key").css({
-			"height": "calc(" + 6 + "in / 2)",
-			"box-shadow": "0 10px #333"
-		});
+		$(this).find(".key").css(
+			"height",
+			"calc(" + 6 + "in / 2)"
+		);
 
 		for (
 			let i = 0;
@@ -899,10 +901,10 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 	});
 	$("#white div").mouseleave(function() {
-		$(this).find(".key").css({
-			"height": "calc(" + 6 + "in / 2)",
-			"box-shadow": "0 10px #333"
-		});
+		$(this).find(".key").css(
+			"height",
+			"calc(" + 6 + "in / 2)"
+		);
 
 		for (
 			let i = 0;
@@ -914,34 +916,37 @@ document.addEventListener("DOMContentLoaded", function() {
 	});
 
 	// black
-	var flat = true;
+	var
+		gap = 3,
+		k = 1;
 	for (
 		let i = 0;
-		i < 8;
-		i++
+		i < rng - 1;
+		i++,
+		k++
 	) {
 		$("#board #black").append("<div></div>");
 
-		if (i % 3 == 0 && i !== 0) {
-			flat = !flat;
+		if (k == gap) {
+			k = 0;
+
+			if (gap == 3) {
+				gap = 4;
+			} else if (gap == 4) {
+				gap = 3;
+			}
 		}
 
-		if (flat) {
-			if (i == 0 || i == 1) {
-				$("#black div:nth-child(" + (i + 1) + ")").append("<div class='key'></div>");
-			}
-		} else {
-			if (i == 3 || i == 4 || i == 5) {
-				$("#black div:nth-child(" + (i + 1) + ")").append("<div class='key'></div>");
-			}
+		if (k) {
+			$("#black div:nth-child(" + (i + 1) + ")").append("<div class='key'></div>");
 		}
 	}
 
 	$("#black > div").mousedown(function() {
-		$(this).find(".key").css({
-			"height": (((5 / 8) * 3) * 0.84) + "in",
-			"box-shadow": "0 6px #333"
-		});
+		$(this).find(".key").css(
+			"height",
+			"calc((3.5in / 2) * 0.84)"
+		);
 
 		const n = $(this).index();
 
@@ -956,10 +961,10 @@ document.addEventListener("DOMContentLoaded", function() {
 	});
 
 	$("#black div").mouseup(function() {
-		$(this).find(".key").css({
-			"height": ((5 / 8) * 3) + "in",
-			"box-shadow": "0 10px #333"
-		});
+		$(this).find(".key").css(
+			"height",
+			"calc(3.5in / 2)"
+		);
 
 		for (
 			let i = 0;
@@ -970,10 +975,10 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 	});
 	$("#black div").mouseleave(function() {
-		$(this).find(".key").css({
-			"height": ((5 / 8) * 3) + "in",
-			"box-shadow": "0 10px #333"
-		});
+		$(this).find(".key").css(
+			"height",
+			"calc(3.5in / 2)"
+		);
 
 		for (
 			let i = 0;

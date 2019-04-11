@@ -449,8 +449,6 @@ document.addEventListener("DOMContentLoaded", function() {
 	/* audio */
 	const ctxAudio = new (window.AudioContext || window.webkitAudioContext)();
 
-	var osc = ctxAudio.createOscillator();
-
 	const sz = Math.pow(2, 10);
 	var
 		analyser = ctxAudio.createAnalyser(),
@@ -458,9 +456,72 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	analyser.fftSize = sz;
 
-	// visualizer
 	var data = new Uint8Array(analyser.frequencyBinCount);
 
+	var osc = ctxAudio.createOscillator();
+
+	/* volume */
+	let
+		diff = Math.abs(48 - 172),
+
+		pc = diff / Math.abs(attr["vol"]["min"] - attr["vol"]["max"]),
+
+		pos = (sett["vol"] + 1) * pc;
+
+	$("#vol #thumb").css(
+		"margin-top",
+		-pos - 12
+	);
+	$("#vol .active").css({
+		"height": 80 - (pos - 62) + 8,
+		"margin-top": (-(80 - (pos - 62))) - 8
+	});
+
+	var slide = false;
+	$("#vol #thumb").mousedown(function() {
+		slide = true;
+
+		$(document).mousemove(function(e) {
+			if (slide) {
+				let pos;
+				if (e.pageY > 48 && e.pageY < 172) {
+					pos = e.pageY;
+				} else {
+					if (e.pageY < 48) {
+						pos = 48;
+					}
+
+					if (e.pageY > 172) {
+						pos = 172;
+					}
+				}
+
+				const
+					diff = Math.abs(48 - 172),
+					delta = Math.abs(pos - 172),
+
+					pc = Math.abs(attr["vol"]["min"] - attr["vol"]["max"]) / diff,
+					val = (delta * pc) - 1;
+
+				sett["vol"] = val;
+
+				$("#vol #thumb").css(
+					"margin-top",
+					pos - (172 + 8 + 4)
+				);
+				$("#vol .active").css({
+					"height": 80 - (pos - 84) + 8,
+					"margin-top": (-(80 - (pos - 84))) - 8
+				});
+			}
+		});
+
+		$(document).mouseup(function() {
+			slide = false;
+		});
+	});
+
+	/* oscilloscope */
 	const
 		canv = document.getElementById("disp"),
 		ctxCanv = canv.getContext("2d");
@@ -490,143 +551,6 @@ document.addEventListener("DOMContentLoaded", function() {
 			);
 		}
 	}
-
-	// key
-	// white
-	for (
-		let i = 0;
-		i < 8;
-		i++
-	) {
-		$("#board #white").append("<div><div class='key'></div></div>");
-	}
-
-	// black
-	var flat = true;
-	for (
-		let i = 0;
-		i < 8;
-		i++
-	) {
-		$("#board #black").append("<div></div>");
-
-		if (i % 3 == 0 && i !== 0) {
-			flat = !flat;
-		}
-
-		if (flat) {
-			if (i == 0 || i == 1) {
-				$("#black div:nth-child(" + (i + 1) + ")").append("<div class='key'></div>");
-			}
-		} else {
-			if (i == 3 || i == 4 || i == 5) {
-				$("#black div:nth-child(" + (i + 1) + ")").append("<div class='key'></div>");
-			}
-		}
-	}
-
-	// key
-	const
-		c4 = 261.63,
-		c5 = 523.25,
-
-		octave = Math.abs(c4 - c5);
-
-	// white
-	$("#white > div").mousedown(function() {
-		$(this).find(".key").css({
-			"height": "calc(calc(" + 6 + "in / 2) * 0.84)",
-			"box-shadow": "0 6px #333"
-		});
-
-		const n = $(this).index();
-
-		for (
-			let i = 0;
-			i < 4;
-			i++
-		) {
-			sys[i]["osc"]["frequency"]["value"] = c4 + (n * (octave / 8));
-			sys[i]["gain"]["gain"]["value"] = sett["vol"];
-		}
-	});
-
-	$("#white div").mouseup(function() {
-		$(this).find(".key").css({
-			"height": "calc(" + 6 + "in / 2)",
-			"box-shadow": "0 10px #333"
-		});
-
-		for (
-			let i = 0;
-			i < 4;
-			i++
-		) {
-			sys[i]["gain"]["gain"]["value"] = -1;
-		}
-	});
-	$("#white div").mouseleave(function() {
-		$(this).find(".key").css({
-			"height": "calc(" + 6 + "in / 2)",
-			"box-shadow": "0 10px #333"
-		});
-
-		for (
-			let i = 0;
-			i < 4;
-			i++
-		) {
-			sys[i]["gain"]["gain"]["value"] = -1;
-		}
-	});
-
-	// black
-	$("#black > div").mousedown(function() {
-		$(this).find(".key").css({
-			"height": (((5 / 8) * 3) * 0.84) + "in",
-			"box-shadow": "0 6px #333"
-		});
-
-		const n = $(this).index();
-
-		for (
-			let i = 0;
-			i < 4;
-			i++
-		) {
-			sys[i]["osc"]["frequency"]["value"] = c4 + ((n * (octave / 8)) + ((octave / 8) / 2));
-			sys[i]["gain"]["gain"]["value"] = sett["vol"];
-		}
-	});
-
-	$("#black div").mouseup(function() {
-		$(this).find(".key").css({
-			"height": ((5 / 8) * 3) + "in",
-			"box-shadow": "0 10px #333"
-		});
-
-		for (
-			let i = 0;
-			i < 4;
-			i++
-		) {
-			sys[i]["gain"]["gain"]["value"] = -1;
-		}
-	});
-	$("#black div").mouseleave(function() {
-		$(this).find(".key").css({
-			"height": ((5 / 8) * 3) + "in",
-			"box-shadow": "0 10px #333"
-		});
-
-		for (
-			let i = 0;
-			i < 4;
-			i++
-		) {
-			sys[i]["gain"]["gain"]["value"] = -1;
-		}
-	});
 
 	/* oscillator */
 	var sys = [];
@@ -800,313 +724,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		);
 	});
 
-	// volume
-	let
-		diff = Math.abs(48 - 172),
-
-		pc = diff / Math.abs(attr["vol"]["min"] - attr["vol"]["max"]),
-
-		pos = (sett["vol"] + 1) * pc;
-
-	$("#vol #thumb").css(
-		"margin-top",
-		-pos - 12
-	);
-	$("#vol .active").css({
-		"height": 80 - (pos - 62) + 8,
-		"margin-top": (-(80 - (pos - 62))) - 8
-	});
-
-	var slide = false;
-	$("#vol #thumb").mousedown(function() {
-		slide = true;
-
-		$(document).mousemove(function(e) {
-			if (slide) {
-				let pos;
-				if (e.pageY > 48 && e.pageY < 172) {
-					pos = e.pageY;
-				} else {
-					if (e.pageY < 48) {
-						pos = 48;
-					}
-
-					if (e.pageY > 172) {
-						pos = 172;
-					}
-				}
-
-				const
-					diff = Math.abs(48 - 172),
-					delta = Math.abs(pos - 172),
-
-					pc = Math.abs(attr["vol"]["min"] - attr["vol"]["max"]) / diff,
-					val = (delta * pc) - 1;
-
-				sett["vol"] = val;
-
-				$("#vol #thumb").css(
-					"margin-top",
-					pos - (172 + 8 + 4)
-				);
-				$("#vol .active").css({
-					"height": 80 - (pos - 84) + 8,
-					"margin-top": (-(80 - (pos - 84))) - 8
-				});
-			}
-		});
-
-		$(document).mouseup(function() {
-			slide = false;
-		});
-	});
-
-	// connect
-	for (
-		let i = 0;
-		i < 4;
-		i++
-	) {
-		sys[i]["osc"].connect(analyser);
-		sys[i]["osc"].connect(ctxAudio.destination);
-
-		sys[i]["gain"].connect(analyser);
-		sys[i]["gain"].connect(ctxAudio.destination);
-	}
-
-	analyser.connect(proc);
-	proc.connect(ctxAudio.destination);
-
-	// mod
-	// port
-	$("#mod").prepend(port(0));
-
-	for (
-		let name in fn["pass"]
-	) {
-		$("#mod > .body").append(
-			`
-			<div
-				class="port"
-			>
-				${dial(name, "mod")}
-
-				<div
-					class="body"
-				>
-					${port(1)}
-					${port(0)}
-				</div>
-			<div>
-			`
-		);
-	}
-
-	$("#mod").append(port(1));
-
-	for (
-		let inst in sett["mod"]
-	) {
-		const
-			diff = Math.abs(attr["mod"][inst]["min"] - attr["mod"][inst]["max"]),
-			inc = diff / 8,
-
-			pc = 180 / diff,
-			deg = Math.abs(attr["mod"][inst]["min"] - sett["mod"][inst]) * pc;
-
-		$("#mod .dial." + inst + " .active path").attr(
-			"transform",
-			"translate(42, 0) rotate(" + (-90 - deg) + ")"
-		);
-		$("#mod .dial." + inst + " .pointer").attr(
-			"transform",
-			"rotate(" + (-90 - deg) + ")"
-		);
-	}
-
-	$("#mod .dial").click(function() {
-		const
-			i = $(this).parent().index(),
-			type = $(this).attr("class").split(" ")[1],
-
-			diff = Math.abs(attr["mod"][type]["min"] - attr["mod"][type]["max"]),
-			inc = diff / 8;
-
-		if (dir == 1) {
-			if (sett["mod"][type] + (inc * dir) > attr["mod"][type]["max"]) {
-				sett["mod"][type] = attr["mod"][type]["max"];
-			} else {
-				sett["mod"][type] += inc * dir;
-			}
-		}
-
-		if (dir == -1) {
-			if (sett["mod"][type] + (inc * dir) < attr["mod"][type]["min"]) {
-				sett["mod"][type] = attr["osc"][type]["min"];
-			} else {
-				sett["mod"][type] += inc * dir;
-			}
-		}
-
-		const
-			pc = 180 / diff,
-			deg = Math.abs(attr["mod"][type]["min"] - sett["mod"][type]) * pc;
-
-		$(this).find(".active path").attr(
-			"transform",
-			"translate(42, 0) rotate(" + (-90 - deg) + ")"
-		);
-		$(this).find(".pointer").attr(
-			"transform",
-			"rotate(" + (-90 - deg) + ")"
-		);
-
-		filt[i].frequency.setValueAtTime(sett["mod"][type], ctxAudio.currentTime)
-	});
-
-	// filter
-	var filt = [];
-	for (
-		let inst in attr["mod"]
-	) {
-		let tmp = ctxAudio.createBiquadFilter();
-		tmp.type = inst;
-
-		for (
-			let i = 0;
-			i < 4;
-			i++
-		) {
-			// sys[i].connect(tmp);
-		}
-		tmp.connect(ctxAudio.destination);
-
-		filt.push(tmp);
-	}
-
-	// wire
-	var
-		grab = false,
-		targ = null;
-
-	function toHex(d) {
-		return ("0" + (Number(d).toString(16))).slice(-2).toUpperCase();
-	}
-
-	$("#mod .nut").mousedown(function(e) {
-		grab = true;
-
-		const start = {
-			x: $(this).offset().left + 16 + 8,
-			y: $(this).offset().top + 16 + 8 
-		};
-
-		let
-			end = {
-				x: e.pageX + 16 + 8,
-				y: e.pageY + 16 + 8
-			},
-			mid = {
-				x: (start.x + (end.x - start.x)) / 2,
-				y: ((start.y + (end.y - start.y)) / 2) + 600
-			},
-
-			c = $("#mod .cable").length,
-			roof = ($("#mod .nut").length / 2) - 1,
-
-			fst = [240, 219, 79],
-			snd = [50, 51, 48],
-
-			diff = [];
-		for (
-			let i = 0;
-			i < 3;
-			i++
-		) {
-			diff[i] = snd[i] - fst[i];
-		}
-
-		let inc = [];
-		for (
-			let i = 0;
-			i < 3;
-			i++
-		) {
-			inc[i] = diff[i] / roof;
-		}
-
-		let col = [];
-		for (
-			let i = 0;
-			i < 3;
-			i++
-		) {
-			col[i] = fst[i] + (c * inc[i]);
-		}
-
-		$("#mod").append(
-			cable(
-				col,
-				{
-					"start": start,
-					"mid": mid,
-					"end": end
-				}
-			)
-		);
-
-		$(document).mousemove(function(e) {
-			if (grab) {
-				end = {
-					x: e.pageX,
-					y: e.pageY
-				};
-				mid = {
-					x: (start.x + (end.x - start.x)) / 2,
-					y: ((start.y + (end.y - start.y)) / 2) + 600
-				};
-
-				$("#mod .cable#active path").attr(
-					"d",
-					`M ${start.x}, ${start.y}
-					C ${start.x}, ${start.y} ${mid.x}, ${mid.y} ${end.x}, ${end.y}
-					`
-				);
-
-				$(".nut").mouseenter(function() {
-					targ = $(this);
-				});
-				$(".nut").mouseleave(function() {
-					targ = null;
-				});
-			}
-		});
-
-		$(document).mouseup(function() {
-			grab = false;
-
-			if (targ) {
-				end = {
-					x: targ.offset().left + 16 + 8,
-					y: targ.offset().top + 16 + 8
-				};
-				mid = {
-					x: (start.x + (end.x - start.x)) / 2,
-					y: ((start.y + (end.y - start.y)) / 2) + 600
-				};
-
-				$("#mod .cable#active path").attr(
-					"d",
-					`M ${start.x}, ${start.y} C ${start.x}, ${start.y} ${mid.x}, ${mid.y} ${end.x}, ${end.y}`
-				);
-				$("#mod .cable#active").removeAttr("id");
-			} else {
-				$("#mod .cable#active").remove();
-			}
-		});
-	});
-
-	// LFO
+	/* LFO */
 	$("#lfo").append(
 		`
 		<div
@@ -1232,6 +850,384 @@ document.addEventListener("DOMContentLoaded", function() {
 		);
 
 		lfo["frequency"]["value"] = sett["lfo"]["attr"][type];
+	});
+
+	/* keyboard */
+	const
+		c4 = 261.63,
+		c5 = 523.25,
+
+		octave = Math.abs(c4 - c5);
+
+	// white
+	for (
+		let i = 0;
+		i < 8;
+		i++
+	) {
+		$("#board #white").append("<div><div class='key'></div></div>");
+	}
+
+	$("#white > div").mousedown(function() {
+		$(this).find(".key").css({
+			"height": "calc(calc(" + 6 + "in / 2) * 0.84)",
+			"box-shadow": "0 6px #333"
+		});
+
+		const n = $(this).index();
+
+		for (
+			let i = 0;
+			i < 4;
+			i++
+		) {
+			sys[i]["osc"]["frequency"]["value"] = c4 + (n * (octave / 8));
+			sys[i]["gain"]["gain"]["value"] = sett["vol"];
+		}
+	});
+
+	$("#white div").mouseup(function() {
+		$(this).find(".key").css({
+			"height": "calc(" + 6 + "in / 2)",
+			"box-shadow": "0 10px #333"
+		});
+
+		for (
+			let i = 0;
+			i < 4;
+			i++
+		) {
+			sys[i]["gain"]["gain"]["value"] = -1;
+		}
+	});
+	$("#white div").mouseleave(function() {
+		$(this).find(".key").css({
+			"height": "calc(" + 6 + "in / 2)",
+			"box-shadow": "0 10px #333"
+		});
+
+		for (
+			let i = 0;
+			i < 4;
+			i++
+		) {
+			sys[i]["gain"]["gain"]["value"] = -1;
+		}
+	});
+
+	// black
+	var flat = true;
+	for (
+		let i = 0;
+		i < 8;
+		i++
+	) {
+		$("#board #black").append("<div></div>");
+
+		if (i % 3 == 0 && i !== 0) {
+			flat = !flat;
+		}
+
+		if (flat) {
+			if (i == 0 || i == 1) {
+				$("#black div:nth-child(" + (i + 1) + ")").append("<div class='key'></div>");
+			}
+		} else {
+			if (i == 3 || i == 4 || i == 5) {
+				$("#black div:nth-child(" + (i + 1) + ")").append("<div class='key'></div>");
+			}
+		}
+	}
+
+	$("#black > div").mousedown(function() {
+		$(this).find(".key").css({
+			"height": (((5 / 8) * 3) * 0.84) + "in",
+			"box-shadow": "0 6px #333"
+		});
+
+		const n = $(this).index();
+
+		for (
+			let i = 0;
+			i < 4;
+			i++
+		) {
+			sys[i]["osc"]["frequency"]["value"] = c4 + ((n * (octave / 8)) + ((octave / 8) / 2));
+			sys[i]["gain"]["gain"]["value"] = sett["vol"];
+		}
+	});
+
+	$("#black div").mouseup(function() {
+		$(this).find(".key").css({
+			"height": ((5 / 8) * 3) + "in",
+			"box-shadow": "0 10px #333"
+		});
+
+		for (
+			let i = 0;
+			i < 4;
+			i++
+		) {
+			sys[i]["gain"]["gain"]["value"] = -1;
+		}
+	});
+	$("#black div").mouseleave(function() {
+		$(this).find(".key").css({
+			"height": ((5 / 8) * 3) + "in",
+			"box-shadow": "0 10px #333"
+		});
+
+		for (
+			let i = 0;
+			i < 4;
+			i++
+		) {
+			sys[i]["gain"]["gain"]["value"] = -1;
+		}
+	});
+
+	/* modular */
+	for (
+		let i = 0;
+		i < 4;
+		i++
+	) {
+		sys[i]["osc"].connect(analyser);
+		sys[i]["osc"].connect(ctxAudio.destination);
+
+		sys[i]["gain"].connect(analyser);
+		sys[i]["gain"].connect(ctxAudio.destination);
+	}
+
+	analyser.connect(proc);
+	proc.connect(ctxAudio.destination);
+
+	// port
+	$("#mod").prepend(port(0));
+
+	for (
+		let name in fn["pass"]
+	) {
+		$("#mod > .body").append(
+			`
+			<div
+				class="port"
+			>
+				${dial(name, "mod")}
+
+				<div
+					class="body"
+				>
+					${port(1)}
+					${port(0)}
+				</div>
+			<div>
+			`
+		);
+	}
+
+	$("#mod").append(port(1));
+
+	for (
+		let inst in sett["mod"]
+	) {
+		const
+			diff = Math.abs(attr["mod"][inst]["min"] - attr["mod"][inst]["max"]),
+			inc = diff / 8,
+
+			pc = 180 / diff,
+			deg = Math.abs(attr["mod"][inst]["min"] - sett["mod"][inst]) * pc;
+
+		$("#mod .dial." + inst + " .active path").attr(
+			"transform",
+			"translate(42, 0) rotate(" + (-90 - deg) + ")"
+		);
+		$("#mod .dial." + inst + " .pointer").attr(
+			"transform",
+			"rotate(" + (-90 - deg) + ")"
+		);
+	}
+
+	$("#mod .dial").click(function() {
+		const
+			i = $(this).parent().index(),
+			type = $(this).attr("class").split(" ")[1],
+
+			diff = Math.abs(attr["mod"][type]["min"] - attr["mod"][type]["max"]),
+			inc = diff / 8;
+
+		if (dir == 1) {
+			if (sett["mod"][type] + (inc * dir) > attr["mod"][type]["max"]) {
+				sett["mod"][type] = attr["mod"][type]["max"];
+			} else {
+				sett["mod"][type] += inc * dir;
+			}
+		}
+
+		if (dir == -1) {
+			if (sett["mod"][type] + (inc * dir) < attr["mod"][type]["min"]) {
+				sett["mod"][type] = attr["osc"][type]["min"];
+			} else {
+				sett["mod"][type] += inc * dir;
+			}
+		}
+
+		const
+			pc = 180 / diff,
+			deg = Math.abs(attr["mod"][type]["min"] - sett["mod"][type]) * pc;
+
+		$(this).find(".active path").attr(
+			"transform",
+			"translate(42, 0) rotate(" + (-90 - deg) + ")"
+		);
+		$(this).find(".pointer").attr(
+			"transform",
+			"rotate(" + (-90 - deg) + ")"
+		);
+
+		filt[i].frequency.setValueAtTime(sett["mod"][type], ctxAudio.currentTime)
+	});
+
+	// filter
+	var filt = [];
+	for (
+		let inst in attr["mod"]
+	) {
+		let tmp = ctxAudio.createBiquadFilter();
+		tmp.type = inst;
+
+		for (
+			let i = 0;
+			i < 4;
+			i++
+		) {
+			// sys[i].connect(tmp);
+		}
+		tmp.connect(ctxAudio.destination);
+
+		filt.push(tmp);
+	}
+
+	// cable
+	var
+		grab = false,
+		targ = null;
+
+	function toHex(d) {
+		return ("0" + (Number(d).toString(16))).slice(-2).toUpperCase();
+	}
+
+	$("#mod .nut").mousedown(function(e) {
+		grab = true;
+
+		const start = {
+			x: $(this).offset().left + 16 + 8,
+			y: $(this).offset().top + 16 + 8 
+		};
+
+		let
+			end = {
+				x: e.pageX + 16 + 8,
+				y: e.pageY + 16 + 8
+			},
+			mid = {
+				x: (start.x + (end.x - start.x)) / 2,
+				y: ((start.y + (end.y - start.y)) / 2) + 600
+			},
+
+			c = $("#mod .cable").length,
+			roof = ($("#mod .nut").length / 2) - 1,
+
+			fst = [240, 219, 79],
+			snd = [50, 51, 48],
+
+			diff = [];
+		for (
+			let i = 0;
+			i < 3;
+			i++
+		) {
+			diff[i] = snd[i] - fst[i];
+		}
+
+		let inc = [];
+		for (
+			let i = 0;
+			i < 3;
+			i++
+		) {
+			inc[i] = diff[i] / roof;
+		}
+
+		let col = [];
+		for (
+			let i = 0;
+			i < 3;
+			i++
+		) {
+			col[i] = fst[i] + (c * inc[i]);
+		}
+
+		$("#mod").append(
+			cable(
+				col,
+				{
+					"start": start,
+					"mid": mid,
+					"end": end
+				}
+			)
+		);
+
+		$(document).mousemove(function(e) {
+			if (grab) {
+				end = {
+					x: e.pageX,
+					y: e.pageY
+				};
+				mid = {
+					x: (start.x + (end.x - start.x)) / 2,
+					y: ((start.y + (end.y - start.y)) / 2) + 600
+				};
+
+				$("#mod .cable#active path").attr(
+					"d",
+					`M ${start.x}, ${start.y}
+					C ${start.x}, ${start.y} ${mid.x}, ${mid.y} ${end.x}, ${end.y}
+					`
+				);
+
+				$(".nut").mouseenter(function() {
+					targ = $(this);
+				});
+				$(".nut").mouseleave(function() {
+					targ = null;
+				});
+			}
+		});
+
+		$(document).mouseup(function() {
+			grab = false;
+
+			if (targ) {
+				end = {
+					x: targ.offset().left + 16 + 8,
+					y: targ.offset().top + 16 + 8
+				};
+				mid = {
+					x: (start.x + (end.x - start.x)) / 2,
+					y: ((start.y + (end.y - start.y)) / 2) + 600
+				};
+
+				$("#mod .cable#active path").attr(
+					"d",
+					`M ${start.x}, ${start.y} C ${start.x}, ${start.y} ${mid.x}, ${mid.y} ${end.x}, ${end.y}`
+				);
+				$("#mod .cable#active").removeAttr("id");
+			} else {
+				$("#mod .cable#active").remove();
+			}
+		});
 	});
 });
 

@@ -1120,10 +1120,11 @@ document.addEventListener("DOMContentLoaded", function() {
 		return ("0" + (Number(d).toString(16))).slice(-2).toUpperCase();
 	}
 
+	var start;
 	$("#mod .nut").mousedown(function(e) {
 		grab = true;
 
-		const start = {
+		start = {
 			x: $(this).offset().left + 16 + 8,
 			y: $(this).offset().top + 16 + 8 
 		};

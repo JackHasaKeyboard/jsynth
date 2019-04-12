@@ -1130,8 +1130,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
 		let
 			end = {
-				x: e.pageX + 16 + 8,
-				y: e.pageY + 16 + 8
+				x: e.pageX,
+				y: e.pageY
 			},
 			mid = {
 				x: start.x + ((end.x - start.x) / 2),

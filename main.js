@@ -1116,10 +1116,6 @@ document.addEventListener("DOMContentLoaded", function() {
 		grab = false,
 		targ = null;
 
-	function toHex(d) {
-		return ("0" + (Number(d).toString(16))).slice(-2).toUpperCase();
-	}
-
 	var start;
 	$("#mod .nut").mousedown(function(e) {
 		grab = true;

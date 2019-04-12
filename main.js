@@ -21,13 +21,33 @@ const
 			}
 		},
 		"mod": {
-			"highpass": {
-				"min": 0,
-				"max": 440
+			"filter": {
+				"highpass": {
+					"min": 0,
+					"max": 440
+				},
+				"lowpass": {
+					"min": 0,
+					"max": 440
+				},
 			},
-			"lowpass": {
-				"min": 0,
-				"max": 440
+			"envelope": {
+				"attack": {
+					"min": 0,
+					"max": 100
+				},
+				"decay": {
+					"min": 0,
+					"max": 100
+				},
+				"sustain": {
+					"min": 0,
+					"max": 100
+				},
+				"release": {
+					"min": 0,
+					"max": 100
+				}
 			}
 		},
 		"vol": {
@@ -81,10 +101,20 @@ const
 	},
 
 	fn = {
-		"pass": {
+		"filter": {
 			"highpass": function() {
 			},
 			"lowpass": function() {
+			}
+		},
+		"envelope": {
+			"attack": function() {
+			},
+			"sustain": function() {
+			},
+			"decay": function() {
+			},
+			"release": function() {
 			}
 		}
 	};
@@ -130,8 +160,16 @@ var
 			}
 		},
 		"mod": {
-			"highpass": 0,
-			"lowpass": 0
+			"filter": {
+				"highpass": 0,
+				"lowpass": 0
+			},
+			"envelope": {
+				"attack": 0,
+				"decay": 0,
+				"sustain": 0,
+				"release": 0
+			}
 		}
 	},
 
@@ -254,8 +292,8 @@ function port(
 }
 
 function dial(
-	type,
-	cat
+	targ,
+	type
 ) {
 	return `
 	<div
@@ -425,7 +463,7 @@ function dial(
 					text-anchor="end"
 					transform="translate(-54, 0)"
 				>
-					${attr[cat][type]["min"]}
+					${targ[type]["min"]}
 				</text>
 				<text
 					class="mark"
@@ -433,7 +471,7 @@ function dial(
 					text-anchor="right"
 					transform="translate(54, 0)"
 				>
-					${attr[cat][type]["max"]}
+					${targ[type]["max"]}
 				</text>
 			</svg>
 		</div>
@@ -636,7 +674,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		for (
 			let inst in attr["osc"]
 		) {
-			$("#sys .node:nth-child(" + (i + 1) + ") .body .attr").append(dial(inst, "osc"));
+			$("#sys .node:nth-child(" + (i + 1) + ") .body .attr").append(dial(attr["osc"], inst));
 		}
 	}
 
@@ -767,7 +805,7 @@ document.addEventListener("DOMContentLoaded", function() {
 				<div
 					class="attr"
 				>
-					${dial("rate", "lfo")}
+					${dial(attr["lfo"], "rate")}
 				</div>
 			<div>
 		</div>
@@ -1009,46 +1047,65 @@ document.addEventListener("DOMContentLoaded", function() {
 	$("#mod").prepend(port(0));
 
 	for (
-		let name in fn["pass"]
+		let module in fn
 	) {
 		$("#mod > .body").append(
 			`
 			<div
-				class="port"
+				class="module"
+				id="${module}"
 			>
-				${dial(name, "mod")}
-
-				<div
-					class="body"
-				>
-					${port(1)}
-					${port(0)}
-				</div>
-			<div>
+				<h3>${module}</h3>
+			</div>
 			`
 		);
+
+		for (
+			let name in fn[module]
+		) {
+			$("#mod > .body #" + module).append(
+				`
+				<div
+					class="port"
+				>
+					${dial(attr["mod"][module], name)}
+
+					<div
+						class="body"
+					>
+						${port(1)}
+						${port(0)}
+					</div>
+				<div>
+				`
+			);
+		}
 	}
 
 	$("#mod").append(port(1));
 
 	for (
-		let inst in sett["mod"]
+		let module in sett["mod"]
 	) {
-		const
-			diff = Math.abs(attr["mod"][inst]["min"] - attr["mod"][inst]["max"]),
-			inc = diff / 8,
+		for (
+			let inst in sett["mod"][module]
+		) {
+			const
+				diff = Math.abs(attr["mod"][module][inst]["min"] - attr["mod"][module][inst]["max"]),
+				inc = diff / 8,
 
-			pc = 180 / diff,
-			deg = Math.abs(attr["mod"][inst]["min"] - sett["mod"][inst]) * pc;
+				pc = 180 / diff,
+				deg = Math.abs(attr["mod"][module][inst]["min"] - sett["mod"][module][inst]) * pc;
 
-		$("#mod .dial." + inst + " .active path").attr(
-			"transform",
-			"translate(42, 0) rotate(" + (-90 - deg) + ")"
-		);
-		$("#mod .dial." + inst + " .pointer").attr(
-			"transform",
-			"rotate(" + (-90 - deg) + ")"
-		);
+			$("#mod .dial." + inst + " .active path").attr(
+				"transform",
+				"translate(42, 0) rotate(" + (-90 - deg) + ")"
+			);
+			$("#mod .dial." + inst + " .pointer").attr(
+				"transform",
+				"rotate(" + (-90 - deg) + ")"
+			);
+		}
 	}
 
 	$("#mod .dial").click(function() {
@@ -1056,28 +1113,30 @@ document.addEventListener("DOMContentLoaded", function() {
 			i = $(this).parent().index(),
 			type = $(this).attr("class").split(" ")[1],
 
-			diff = Math.abs(attr["mod"][type]["min"] - attr["mod"][type]["max"]),
+			module = $(this).parent().parent().attr("id"),
+
+			diff = Math.abs(attr["mod"][module][type]["min"] - attr["mod"][module][type]["max"]),
 			inc = diff / 8;
 
 		if (dir == 1) {
-			if (sett["mod"][type] + (inc * dir) > attr["mod"][type]["max"]) {
-				sett["mod"][type] = attr["mod"][type]["max"];
+			if (sett["mod"][module][type] + (inc * dir) > attr["mod"][module][type]["max"]) {
+				sett["mod"][module][type] = attr["mod"][module][type]["max"];
 			} else {
-				sett["mod"][type] += inc * dir;
+				sett["mod"][module][type] += inc * dir;
 			}
 		}
 
 		if (dir == -1) {
-			if (sett["mod"][type] + (inc * dir) < attr["mod"][type]["min"]) {
-				sett["mod"][type] = attr["osc"][type]["min"];
+			if (sett["mod"][module][type] + (inc * dir) < attr["mod"][module][type]["min"]) {
+				sett["mod"][module][type] = attr["osc"][type]["min"];
 			} else {
-				sett["mod"][type] += inc * dir;
+				sett["mod"][module][type] += inc * dir;
 			}
 		}
 
 		const
 			pc = 180 / diff,
-			deg = Math.abs(attr["mod"][type]["min"] - sett["mod"][type]) * pc;
+			deg = Math.abs(attr["mod"][module][type]["min"] - sett["mod"][module][type]) * pc;
 
 		$(this).find(".active path").attr(
 			"transform",

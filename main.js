@@ -1134,8 +1134,8 @@ document.addEventListener("DOMContentLoaded", function() {
 				y: e.pageY + 16 + 8
 			},
 			mid = {
-				x: (start.x + (end.x - start.x)) / 2,
-				y: ((start.y + (end.y - start.y)) / 2) + 600
+				x: start.x + ((end.x - start.x) / 2),
+				y: ((start.y + (end.y - start.y) / 2)) + 160
 			},
 
 			c = $("#mod .cable").length,
@@ -1189,8 +1189,8 @@ document.addEventListener("DOMContentLoaded", function() {
 					y: e.pageY
 				};
 				mid = {
-					x: (start.x + (end.x - start.x)) / 2,
-					y: ((start.y + (end.y - start.y)) / 2) + 600
+					x: start.x + ((end.x - start.x) / 2),
+					y: ((start.y + (end.y - start.y) / 2)) + 160
 				};
 
 				$("#mod .cable#active path").attr(
@@ -1218,8 +1218,8 @@ document.addEventListener("DOMContentLoaded", function() {
 					y: targ.offset().top + 16 + 8
 				};
 				mid = {
-					x: (start.x + (end.x - start.x)) / 2,
-					y: ((start.y + (end.y - start.y)) / 2) + 600
+					x: start.x + ((end.x - start.x) / 2),
+					y: ((start.y + (end.y - start.y) / 2)) + 160
 				};
 
 				$("#mod .cable#active path").attr(

@@ -1116,118 +1116,122 @@ document.addEventListener("DOMContentLoaded", function() {
 		grab = false,
 		targ = null;
 
-	var start;
+	var
+		start;
+
+		roof = ($("#mod .nut").length / 2);
 	$("#mod .nut").mousedown(function(e) {
-		grab = true;
+		let c = $("#mod .cable").length;
 
-		start = {
-			x: $(this).offset().left + 16 + 8,
-			y: $(this).offset().top + 16 + 8 
-		};
+		if (c < roof) {
+			grab = true;
 
-		let
-			end = {
-				x: e.pageX,
-				y: e.pageY
-			},
-			mid = {
-				x: start.x + ((end.x - start.x) / 2),
-				y: ((start.y + (end.y - start.y) / 2)) + 160
-			},
+			start = {
+				x: $(this).offset().left + 16 + 8,
+				y: $(this).offset().top + 16 + 8 
+			};
 
-			c = $("#mod .cable").length,
-			roof = ($("#mod .nut").length / 2) - 1,
-
-			fst = [240, 219, 79],
-			snd = [50, 51, 48],
-
-			diff = [];
-		for (
-			let i = 0;
-			i < 3;
-			i++
-		) {
-			diff[i] = snd[i] - fst[i];
-		}
-
-		let inc = [];
-		for (
-			let i = 0;
-			i < 3;
-			i++
-		) {
-			inc[i] = diff[i] / roof;
-		}
-
-		let col = [];
-		for (
-			let i = 0;
-			i < 3;
-			i++
-		) {
-			col[i] = fst[i] + (c * inc[i]);
-		}
-
-		$("#mod").append(
-			cable(
-				col,
-				{
-					"start": start,
-					"mid": mid,
-					"end": end
-				}
-			)
-		);
-
-		$(document).mousemove(function(e) {
-			if (grab) {
+			let
 				end = {
 					x: e.pageX,
 					y: e.pageY
-				};
+				},
 				mid = {
 					x: start.x + ((end.x - start.x) / 2),
 					y: ((start.y + (end.y - start.y) / 2)) + 160
-				};
+				},
 
-				$("#mod .cable#active path").attr(
-					"d",
-					`M ${start.x}, ${start.y}
-					C ${start.x}, ${start.y} ${mid.x}, ${mid.y} ${end.x}, ${end.y}
-					`
-				);
+				fst = [240, 219, 79],
+				snd = [50, 51, 48],
 
-				$(".nut").mouseenter(function() {
-					targ = $(this);
-				});
-				$(".nut").mouseleave(function() {
-					targ = null;
-				});
+				diff = [];
+			for (
+				let i = 0;
+				i < 3;
+				i++
+			) {
+				diff[i] = snd[i] - fst[i];
 			}
-		});
 
-		$(document).mouseup(function() {
-			grab = false;
-
-			if (targ) {
-				end = {
-					x: targ.offset().left + 16 + 8,
-					y: targ.offset().top + 16 + 8
-				};
-				mid = {
-					x: start.x + ((end.x - start.x) / 2),
-					y: ((start.y + (end.y - start.y) / 2)) + 160
-				};
-
-				$("#mod .cable#active path").attr(
-					"d",
-					`M ${start.x}, ${start.y} C ${start.x}, ${start.y} ${mid.x}, ${mid.y} ${end.x}, ${end.y}`
-				);
-				$("#mod .cable#active").removeAttr("id");
-			} else {
-				$("#mod .cable#active").remove();
+			let inc = [];
+			for (
+				let i = 0;
+				i < 3;
+				i++
+			) {
+				inc[i] = diff[i] / (roof - 1);
 			}
-		});
+
+			let col = [];
+			for (
+				let i = 0;
+				i < 3;
+				i++
+			) {
+				col[i] = fst[i] + (c * inc[i]);
+			}
+
+			$("#mod").append(
+				cable(
+					col,
+					{
+						"start": start,
+						"mid": mid,
+						"end": end
+					}
+				)
+			);
+
+			$(document).mousemove(function(e) {
+				if (grab) {
+					end = {
+						x: e.pageX,
+						y: e.pageY
+					};
+					mid = {
+						x: start.x + ((end.x - start.x) / 2),
+						y: ((start.y + (end.y - start.y) / 2)) + 160
+					};
+
+					$("#mod .cable#active path").attr(
+						"d",
+						`M ${start.x}, ${start.y}
+						C ${start.x}, ${start.y} ${mid.x}, ${mid.y} ${end.x}, ${end.y}
+						`
+					);
+
+					$(".nut").mouseenter(function() {
+						targ = $(this);
+					});
+					$(".nut").mouseleave(function() {
+						targ = null;
+					});
+				}
+			});
+
+			$(document).mouseup(function() {
+				grab = false;
+
+				if (targ) {
+					end = {
+						x: targ.offset().left + 16 + 8,
+						y: targ.offset().top + 16 + 8
+					};
+					mid = {
+						x: start.x + ((end.x - start.x) / 2),
+						y: ((start.y + (end.y - start.y) / 2)) + 160
+					};
+
+					$("#mod .cable#active path").attr(
+						"d",
+						`M ${start.x}, ${start.y} C ${start.x}, ${start.y} ${mid.x}, ${mid.y} ${end.x}, ${end.y}`
+					);
+					$("#mod .cable#active").removeAttr("id");
+				} else {
+					$("#mod .cable#active").remove();
+				}
+			});
+		}
 	});
 });
 

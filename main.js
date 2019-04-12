@@ -868,13 +868,13 @@ document.addEventListener("DOMContentLoaded", function() {
 		$("#board #white").append("<div><div class='key'></div></div>");
 	}
 
-	$("#white > div").mousedown(function() {
-		$(this).find(".key").css(
+	$("#white div .key").mousedown(function() {
+		$(this).css(
 			"height",
 			"calc(calc(" + 6 + "in / 2) * 0.84)"
 		);
 
-		const n = $(this).index();
+		const n = $(this).parent().index();
 
 		for (
 			let i = 0;
@@ -886,7 +886,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 	});
 
-	$("#white div").mouseup(function() {
+	$("#white > div").mouseup(function() {
 		$(this).find(".key").css(
 			"height",
 			"calc(" + 6 + "in / 2)"
@@ -900,7 +900,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			sys[i]["gain"]["gain"]["value"] = -1;
 		}
 	});
-	$("#white div").mouseleave(function() {
+	$("#white > div").mouseleave(function() {
 		$(this).find(".key").css(
 			"height",
 			"calc(" + 6 + "in / 2)"
@@ -942,13 +942,13 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 	}
 
-	$("#black > div").mousedown(function() {
-		$(this).find(".key").css(
+	$("#black div .key").mousedown(function() {
+		$(this).css(
 			"height",
 			"calc((3.5in / 2) * 0.84)"
 		);
 
-		const n = $(this).index();
+		const n = $(this).parent().index();
 
 		for (
 			let i = 0;
@@ -960,7 +960,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 	});
 
-	$("#black div").mouseup(function() {
+	$("#black > div").mouseup(function() {
 		$(this).find(".key").css(
 			"height",
 			"calc(3.5in / 2)"
@@ -974,7 +974,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			sys[i]["gain"]["gain"]["value"] = -1;
 		}
 	});
-	$("#black div").mouseleave(function() {
+	$("#black > div").mouseleave(function() {
 		$(this).find(".key").css(
 			"height",
 			"calc(3.5in / 2)"

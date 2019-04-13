@@ -56,50 +56,6 @@ const
 		}
 	},
 
-	form = {
-		"sine": `
-			M 0, 8
-			C 0 8, 8 24, 16 8
-			C 16 8, 24 -8, 32 8
-
-			C 32 8, 40 24, 48 8
-			C 48 8, 56 -8, 64 8
-
-			C 64 8, 72 24, 80 8
-			C 80 8, 88 -8, 96 8
-		`,
-		"square": `
-			M 0, 16
-			L 16, 16
-			L 16, 0
-			L 32, 0
-			L 32, 16
-			L 48, 16
-			L 48, 0
-			L 64, 0
-			L 64, 16
-			L 80, 16
-			L 80, 0
-			L 96, 0
-		`,
-		"sawtooth":`
-			M 0, 16
-			L 16, 0
-			L 32, 16
-			L 48, 0
-			L 64, 16
-			L 80, 0
-		`,
-		"triangle": `
-			M 0, 16
-			L 32, 0
-			L 32, 16
-			L 64, 0
-			L 64, 16
-			L 96, 0
-		`
-	},
-
 	fn = {
 		"filter": {
 			"highpass": function() {
@@ -117,6 +73,48 @@ const
 			"release": function() {
 			}
 		}
+	},
+
+	form = {
+		"sine": `
+		M 0, 0
+		C 0 0, 5 16, 10 0
+		C 10 0, 15 -16, 20 0
+		C 20 0, 25 16, 30 0
+		C 30 0, 35 -16, 40 0
+		C 40 0, 45 16, 50 0
+		C 50 0, 55 -16, 60 0
+		`,
+		"square": `
+		M 0, 5
+		L 10, -5
+		L 20, 5
+		L 30, -5
+		L 40, 5
+		L 50, -5
+		`,
+		"triangle": `
+		M 0, 5
+		L 10, 5
+		L 10, -5
+		L 20, -5
+		L 20, 5
+		L 30, 5
+		L 30, -5
+		L 40, -5
+		L 40, 5
+		L 50, 5
+		L 50, -5
+		L 60, -5
+		`,
+		"sawtooth": `
+		M 0, 5
+		L 15, -5
+		L 15, 5
+		L 30, -5
+		L 30, 5
+		L 45, -5
+		`
 	};
 
 var
@@ -124,7 +122,7 @@ var
 		"vol": 0.2,
 		"osc": [
 			{
-				"form": "sine",
+				"form": "square",
 				"attr": {
 					"de-tune": 0,
 					"rate": 0,
@@ -138,7 +136,7 @@ var
 					"gain": -1
 				}
 			}, {
-				"form": "sine",
+				"form": "triangle",
 				"attr": {
 					"de-tune": 0,
 					"rate": 0,
@@ -479,6 +477,302 @@ function dial(
 	`;
 }
 
+function dialForm(
+	type,
+	cat
+) {
+	return `
+	<div
+		class="dial form"
+	>
+		<div>
+			<svg
+				overflow="visible"
+				id="shadow"
+				width="64"
+				height="64"
+			>
+				<filter
+					id="dropShadow"
+					height="110%"
+				>
+					<feGaussianBlur
+						in="SourceAlpha"
+						stdDeviation="1.6"
+					/>
+					<feOffset
+						dx="0"
+						dy="0"
+						result="offsetblur"
+					/>
+
+					<feComponentTransfer>
+						<feFuncA
+							type="linear"
+							slope="0.32"
+						/>
+					</feComponentTransfer>
+					<feMerge>
+						<feMergeNode/>
+						<feMergeNode
+							in="SourceGraphic"
+						/>
+					</feMerge>
+				</filter>
+
+				<circle
+					cx="32"
+					cy="32"
+					r="16"
+					fill="#222"
+					style="filter:url(#dropShadow)"
+					overflow="visible"
+					transform="translate(0, -100)"
+				/>
+			</svg>
+
+			<svg
+				width="64"
+				height="44"
+				transform="translate(0, 32)"
+				fill="transparent"
+				stroke="#080808"
+				stroke-width="4"
+			>
+				<circle
+					cx="32"
+					cy="32"
+					r="26"
+					transform="translate(0, -32)"
+				/>
+			</svg>
+
+			<svg
+				class="active"
+				width="84"
+				height="32"
+				transform="translate(-10, 32)"
+			>
+				<path
+					transform="translate(42, 0)"
+					d="${arc({x: 0, y: 0}, 26, {start: 0, end: 180})}"
+					fill="transparent"
+					stroke="#f0db4f"
+					stroke-width="4"
+				/>
+			</svg>
+
+			<svg
+				transform="translate(44, 0)"
+				class="pointer"
+				width="64"
+				height="64"
+				overflow="visible"
+			>
+				<path
+					transform="translate(32, 24)"
+					d="M 0, -8 L 0, 0"
+					stroke="#f0db4f"
+					stroke-width="4"
+				/>
+			</svg>
+
+			<svg
+				class="line"
+				width="64"
+				height="64"
+				overflow="visible"
+				transform="translate(32, 32)"
+			>
+				<g
+					id="lines"
+				>
+					<line
+						x1="34"
+						x2="44"
+					></line>
+				</g>
+
+				<g
+					stroke="#666"
+					stroke-width="4"
+				>
+					<use
+						xlink:href="#lines"
+						transform="rotate(180)">
+					</use>
+					<use
+						xlink:href="#lines"
+						transform="rotate(120)">
+					</use>
+					<use
+						xlink:href="#lines"
+						transform="rotate(60)">
+					</use>
+					<use
+						xlink:href="#lines"
+						transform="rotate(0)">
+					</use>
+				</g>
+
+				<text
+					class="title"
+					text-anchor="middle"
+					transform="translate(0, -26)"
+				>
+					wave-form
+				</text>
+			</svg>
+
+			<svg
+				overflow="visible"
+				width="60"
+				height="16"
+				transform="translate(
+					${
+						polarToCart(
+							{
+								x: 32,
+								y: 32
+							},
+							74,
+							270
+						).x - 46
+					},
+					${
+						polarToCart(
+							{
+								x: 32,
+								y: 32
+							},
+							74,
+							270
+						).y
+					}
+				)"
+			>
+				<path
+					fill="transparent"
+					stroke="grey"
+					stroke-width="4"
+					stroke-linecap="round"
+					d="${form["sine"]}"
+				/>
+			</svg>
+
+			<svg
+				overflow="visible"
+				width="50"
+				height="16"
+				transform="translate(
+					${
+						polarToCart(
+							{
+								x: 32,
+								y: 32
+							},
+							74,
+							210
+						).x - 25
+					},
+					${
+						polarToCart(
+							{
+								x: 32,
+								y: 32
+							},
+							74,
+							210
+						).y
+					}
+				)"
+			>
+				<path
+					fill="transparent"
+					stroke="grey"
+					stroke-width="4"
+					stroke-linecap="round"
+					alignment-baseline="right"
+					d="${form["square"]}"
+				/>
+			</svg>
+
+			<svg
+				overflow="visible"
+				width="60"
+				height="16"
+				transform="translate(
+					${
+						polarToCart(
+							{
+								x: 32,
+								y: 32
+							},
+							74,
+							150
+						).x - 32
+					},
+					${
+						polarToCart(
+							{
+								x: 32,
+								y: 32
+							},
+							74,
+							150
+						).y
+					}
+				)"
+			>
+				<path
+					fill="transparent"
+					stroke="grey"
+					stroke-width="4"
+					stroke-linecap="round"
+					d="${form["triangle"]}"
+				/>
+			</svg>
+
+			<svg
+				overflow="visible"
+				width="45"
+				height="16"
+				transform="translate(
+					${
+						polarToCart(
+							{
+								x: 32,
+								y: 32
+							},
+							74,
+							90
+						).x - 16
+					},
+					${
+						polarToCart(
+							{
+								x: 32,
+								y: 32
+							},
+							74,
+							90
+						).y
+					}
+				)"
+			>
+				<path
+					fill="transparent"
+					stroke="grey"
+					stroke-width="4"
+					stroke-linecap="round"
+					d="${form["sawtooth"]}"
+				/>
+			</svg>
+		</div>
+	</div>
+	`;
+}
+
 document.addEventListener("DOMContentLoaded", function() {
 	const
 		js = "#f0db4f",
@@ -631,45 +925,36 @@ document.addEventListener("DOMContentLoaded", function() {
 					class="body"
 				>
 					<div
-						class="form"
-					>
-						<select
-							class="input"
-						></select>
-
-						<svg
-							width="100"
-							height="16"
-							overflow="visible"
-							class="wave"
-						>
-							<path
-								stroke=${js}
-								stroke-width="4"
-								stroke-linecap="round"
-								fill="transparent"
-								d="${form[sett["osc"][i]["form"]]}"
-							/>
-						</svg>
-					</div>
-					<div
 						class="attr"
 					></div>
 				</div>
 			</div>
 		`);
 
-		for (
-			const wave in form
-		) {
-			$("#sys .node:nth-child(" + (i + 1) + ") .body .form .input").append("<option>" + wave + "</option>");
-		}
+		$("#sys .node:nth-child(" + (i + 1) + ") .body .attr").append(dialForm(attr["osc"], "form"));
 
-		$(".input").change(function() {
-			sys[i]["osc"]["type"] = this.value;
+		let
+			name = sett["osc"][i]["form"],
+			idx = Object.keys(form).indexOf(name);
 
-			$(this).parent().find(".wave path").attr("d", form[this.value]);
-		});
+		const
+			floor = 0,
+			roof = 3,
+
+			diff = Math.abs(floor - roof),
+			inc = diff / diff,
+
+			pc = 180 / diff,
+			deg = idx * pc;
+
+		$("#sys .node:nth-child(" + (i + 1) + ") .dial.form .active path").attr(
+			"transform",
+			"translate(42, 0) rotate(" + (-90 - deg) + ")"
+		);
+		$("#sys .node:nth-child(" + (i + 1) + ") .dial.form .pointer").attr(
+			"transform",
+			"rotate(" + (-90 - deg) + ")"
+		);
 
 		for (
 			let inst in attr["osc"]
@@ -708,7 +993,62 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 	}
 
-	$("#osc .dial").click(function() {
+	$("#osc .dial.form").click(function() {
+		const
+			i = $(this).parent().parent().parent().index(),
+
+			floor = 0,
+			roof = 3,
+
+			diff = Math.abs(floor - roof),
+
+			inc = diff / diff;
+
+		let
+			name = sett["osc"][i]["form"],
+			idx = Object.keys(form).indexOf(name);
+
+		if (dir == 1) {
+			if (idx + (inc * dir) > roof) {
+				sett["osc"][i]["form"] = Object.keys(form)[roof];
+			} else {
+				idx++;
+
+				let name = Object.keys(form)[idx];
+
+				sett["osc"][i]["form"] = name;
+			}
+		}
+
+		if (dir == -1) {
+			if (idx + (inc * dir) < floor) {
+				sett["osc"][i]["form"] = Object.keys(form)[0];
+			} else {
+				idx--;
+
+				let name = Object.keys(form)[idx];
+
+				sett["osc"][i]["form"] = name;
+			}
+		}
+
+		const
+			pc = 180 / diff,
+			deg = idx * pc;
+
+		$("#sys .node:nth-child(" + (i + 1) + ") .dial.form .active path").attr(
+			"transform",
+			"translate(42, 0) rotate(" + (-90 - deg) + ")"
+		);
+		$("#sys .node:nth-child(" + (i + 1) + ") .dial.form .pointer").attr(
+			"transform",
+			"rotate(" + (-90 - deg) + ")"
+		);
+
+		sys[i]["osc"].type = sett["osc"][i]["form"];
+	});
+
+	$("#osc .dial:not(.form)").click(function() {
 		const
 			i = $(this).parent().parent().index(),
 			type = $(this).attr("class").split(" ")[1],
@@ -776,35 +1116,9 @@ document.addEventListener("DOMContentLoaded", function() {
 				class="body"
 			>
 				<div
-					class="form"
-				>
-					<select
-						class="input"
-					></select>
-
-					<div
-						class="form"
-					>
-						<svg
-							width="100"
-							height="16"
-							overflow="visible"
-							class="wave"
-						>
-							<path
-								stroke=${js}
-								stroke-width="4"
-								stroke-linecap="round"
-								fill="transparent"
-								d="${form[sett["osc"][0]["form"]]}"
-							/>
-						</svg>
-					</div>
-				</div>
-
-				<div
 					class="attr"
 				>
+					${dialForm(attr["lfo"], "form")}
 					${dial(attr["lfo"], "rate")}
 				</div>
 			<div>
@@ -812,22 +1126,35 @@ document.addEventListener("DOMContentLoaded", function() {
 		`
 	);
 
-	for (
-		const wave in form
-	) {
-		$("#sys #lfo .node .body .form .input").append("<option>" + wave + "</option>");
-	}
-
-	$("#lfo .input").change(function() {
-		lfo["type"] = this.value;
-
-		$(this).parent().find(".wave path").attr("d", form[this.value]);
-	});
-
 	var lfo = ctxAudio.createOscillator();
 	lfo.frequency.value = sett["lfo"]["attr"]["rate"];
 	lfo.connect(ctxAudio.destination);
 	lfo.start();
+
+	let
+		name = sett["lfo"]["form"],
+		idx = Object.keys(form).indexOf(name);
+
+	(function() {
+		const
+			floor = 0,
+			roof = 3,
+
+			diff = Math.abs(floor - roof),
+			inc = diff / diff,
+
+			pc = 180 / diff,
+			deg = idx * pc;
+
+		$("#lfo .dial.form .active path").attr(
+			"transform",
+			"translate(42, 0) rotate(" + (-90 - deg) + ")"
+		);
+		$("#lfo .dial.form .pointer").attr(
+			"transform",
+			"rotate(" + (-90 - deg) + ")"
+		);
+	})();
 
 	for (
 		let inst in sett["lfo"]["attr"]
@@ -849,7 +1176,62 @@ document.addEventListener("DOMContentLoaded", function() {
 		);
 	}
 
-	$("#lfo .dial").click(function() {
+	$("#lfo .dial.form").click(function() {
+		const
+			i = $(this).parent().parent().parent().index(),
+
+			floor = 0,
+			roof = 3,
+
+			diff = Math.abs(floor - roof),
+
+			inc = diff / diff;
+
+		let
+			name = sett["osc"][i]["form"],
+			idx = Object.keys(form).indexOf(name);
+
+		if (dir == 1) {
+			if (idx + (inc * dir) > roof) {
+				sett["osc"][i]["form"] = Object.keys(form)[roof];
+			} else {
+				idx++;
+
+				let name = Object.keys(form)[idx];
+
+				sett["osc"][i]["form"] = name;
+			}
+		}
+
+		if (dir == -1) {
+			if (idx + (inc * dir) < floor) {
+				sett["osc"][i]["form"] = Object.keys(form)[0];
+			} else {
+				idx--;
+
+				let name = Object.keys(form)[idx];
+
+				sett["osc"][i]["form"] = name;
+			}
+		}
+
+		const
+			pc = 180 / diff,
+			deg = idx * pc;
+
+		$("#sys .node:nth-child(" + (i + 1) + ") .dial.form .active path").attr(
+			"transform",
+			"translate(42, 0) rotate(" + (-90 - deg) + ")"
+		);
+		$("#sys .node:nth-child(" + (i + 1) + ") .dial.form .pointer").attr(
+			"transform",
+			"rotate(" + (-90 - deg) + ")"
+		);
+
+		sys[i]["osc"].type = sett["osc"][i]["form"];
+	});
+
+	$("#lfo .dial:not(.form)").click(function() {
 		const
 			type = $(this).attr("class").split(" ")[1],
 

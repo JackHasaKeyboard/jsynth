@@ -1,0 +1,183 @@
+@font-face {
+  font-family: Neutra Text Bold;
+  src: url("Neutra-Text-Bold.otf"); }
+* {
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none; }
+
+body {
+  display: inline-block; }
+
+#unit {
+  display: inline-block;
+  background: #222;
+  border-radius: 12px;
+  box-shadow: 0 40px #161616;
+  margin-bottom: 40px; }
+  #unit #head {
+    padding: 12px;
+    display: flex; }
+    #unit #head > * {
+      margin: 6px; }
+    #unit #head #title {
+      flex-grow: 3;
+      padding: 6px;
+      font-size: 40px;
+      font-family: Neutra Text Bold;
+      font-weight: bold;
+      color: #f0db4f; }
+    #unit #head #vol {
+      background: #111;
+      margin: 6px;
+      padding: 6px;
+      border-radius: 6px; }
+      #unit #head #vol > div {
+        padding: 8px;
+        margin-left: 8px;
+        margin-right: 8px; }
+        #unit #head #vol > div #track,
+        #unit #head #vol > div .active {
+          width: 4px; }
+        #unit #head #vol > div #track {
+          height: 130px;
+          background: #080808; }
+        #unit #head #vol > div .active {
+          position: absolute;
+          background: #f0db4f; }
+        #unit #head #vol > div #thumb {
+          position: absolute;
+          height: 10px;
+          padding: 4px;
+          border-radius: 6px;
+          margin-left: -14px;
+          margin-top: -12px;
+          background: #222;
+          box-shadow: 0px 0px 1px 1px #111;
+          cursor: pointer; }
+    #unit #head #disp {
+      border-radius: 6px;
+      margin-left: auto;
+      background: #111; }
+  #unit #input {
+    display: flex; }
+    #unit #input #mod {
+      display: flex;
+      flex-direction: column;
+      padding: 8px;
+      margin: 16px;
+      border-radius: 6px;
+      background: #111;
+      text-transform: uppercase; }
+      #unit #input #mod h3 {
+        text-align: center;
+        font-family: Arial;
+        color: grey;
+        text-transform: uppercase; }
+      #unit #input #mod .body {
+        display: flex; }
+      #unit #input #mod .port {
+        margin: 8px auto 8px auto;
+        font-family: Arial;
+        font-size: 10px;
+        font-weight: bold;
+        text-align: center;
+        color: grey;
+        cursor: pointer; }
+        #unit #input #mod .port .body {
+          display: flex; }
+          #unit #input #mod .port .body div {
+            flex-grow: 1; }
+        #unit #input #mod .port .nut {
+          width: 50px;
+          height: 50px; }
+      #unit #input #mod .cable {
+        position: absolute;
+        pointer-events: none;
+        left: 0;
+        top: 0; }
+  #unit #body {
+    display: flex; }
+    #unit #body #board {
+      padding: 8px;
+      display: flex;
+      padding-right: 30px; }
+      #unit #body #board #white,
+      #unit #body #board #black {
+        display: flex; }
+        #unit #body #board #white div,
+        #unit #body #board #black div {
+          padding: 8px;
+          margin: 1px;
+          width: calc((48in / 52) / 2); }
+          #unit #body #board #white div .key,
+          #unit #body #board #black div .key {
+            width: calc((48in / 52) / 2);
+            border-radius: 0 0 6px 6px;
+            cursor: pointer; }
+      #unit #body #board #white div .key {
+        background: #f1f1f1;
+        height: calc(6in / 2); }
+      #unit #body #board #black {
+        margin-left: calc(((0.875in) / 2) - 12px);
+        position: absolute; }
+        #unit #body #board #black div div {
+          background: #161616;
+          height: calc(3.5in / 2); }
+
+.dial {
+  padding: calc(64px);
+  margin: 8px;
+  background: #111;
+  border-radius: 6px;
+  padding-left: 100px;
+  padding-right: 100px;
+  display: flex; }
+  .dial div {
+    margin: auto; }
+    .dial div svg {
+      cursor: pointer;
+      position: absolute;
+      margin-left: -32px;
+      margin-top: -32px; }
+      .dial div svg#shadow {
+        margin-top: 68px; }
+      .dial div svg text {
+        font-family: Arial;
+        font-weight: bold;
+        text-transform: uppercase;
+        fill: grey;
+        font-size: 12px; }
+
+#sys .node {
+  padding: 8px; }
+  #sys .node .head h3 {
+    text-align: center;
+    font-family: Arial;
+    color: grey; }
+  #sys .node .body .form.form {
+    padding-left: 160px;
+    padding-right: 160px;
+    padding-bottom: 87px; }
+  #sys .node .body .form .input {
+    margin: 8px; }
+  #sys .node .body .form .wave {
+    display: flex;
+    margin: 8px;
+    padding: 8px;
+    border-radius: 6px;
+    background: #111; }
+  #sys .node .body .attr {
+    display: flex; }
+    #sys .node .body .attr > div {
+      flex-grow: 1; }
+
+/*# sourceMappingURL=main.css.map */
